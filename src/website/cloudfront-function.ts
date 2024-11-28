@@ -26,6 +26,14 @@ abstract class CloudfrontChainedFunction {
         return this;
     }
 
+    createOrUndefined() {
+        if (this.handlerChain.length > 0) {
+            return this.create();
+        } else {
+            return undefined;
+        }
+    }
+
     create() {
         const handlersDir = `${__dirname}/../../resources/cloudfront-function-handlers/${this.eventType}`;
 
@@ -70,12 +78,35 @@ export class ViewerRequestFunction extends CloudfrontChainedFunction {
     }
 
     /**
-     * The handler appends index.html to requests that end with a slash or don’t include a file extension in the URL.
+     * @deprecated replace with rewriteWebpagePath('SUB_DIR')
      */
     withIndexRewrite() {
-        this.handlerChain.push({
-            name: "indexRewriteHandler",
-        });
+        return this.rewriteWebpagePath('SUB_DIR');
+    }
+
+    /**
+     * Rewrites the requested path to serve an actual HTML file.
+     * 
+     * Strategy 'FILE':
+     * If the last element in the path does not contain a dot, it appends '.html'.
+     * If the requested path ends with a slash, the user is redirected to a URL without slash (with status 301 Moved Permanently).
+     * Example: '/about' is rewritten to '/about.html'
+     * 
+     * Stragtegy 'SUB_DIR':
+     * - appending 'index.html' if path ends with a slash or
+     * - appending '/index.html' if paths ends without a slash and doesn't contain a file extension.
+     * Example: '/about' or '/about/' are rewritten to '/about/index.html'
+     */
+    rewriteWebpagePath(strategy: WebpageRewriteStrategy) {
+        if (strategy == 'FILE') {
+            this.handlerChain.push({
+                name: "rewriteWebpageToFileHandler",
+            });
+        } else {
+            this.handlerChain.push({
+                name: "rewriteWebpageToSubdirHandler",
+            });
+        }
         return this;
     }
 
@@ -152,3 +183,5 @@ export interface Handler {
 }
 
 export type EventType = `viewer-request` | `viewer-response`;
+
+export type WebpageRewriteStrategy = 'FILE' | 'SUB_DIR';
