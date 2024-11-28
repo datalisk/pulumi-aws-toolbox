@@ -4,10 +4,10 @@ test('getVersion wrong dir', async () => {
     await expect(() => getVersion('doesnotexist')).rejects.toThrow();
 });
 
-test('getVersion for src/database', async () => {
-    expect(await getVersion('src/database')).toBe(`b5461773`);
+test('getVersion for single path', async () => {
+    expect(await getVersion('src/build/index.ts')).toBe(`dfe3d758`);
 });
 
 test('getVersion for multiple paths', async () => {
-    expect(await getVersion('src/database', 'resources/ses-proxy-mailer')).toBe(`d96b98da`);
+    expect(await getVersion('src/build/index.ts', 'resources/ses-proxy-mailer')).toBe(`dfe3d758`);
 });

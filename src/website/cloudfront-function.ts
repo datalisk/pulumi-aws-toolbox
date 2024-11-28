@@ -111,6 +111,39 @@ export class ViewerRequestFunction extends CloudfrontChainedFunction {
     }
 
     /**
+     * Rewrites a path by replacing a single path element with a replacement string.
+     */
+    rewritePathElement(pathElementIndex: number, replacement: string) {
+        this.handlerChain.push(
+            {
+                name: "rewritePathElementHandler",
+                replacements: {
+                    "process.env.PATH_ELEMENT_INDEX": JSON.stringify(pathElementIndex),
+                    "process.env.REPLACEMENT": JSON.stringify(replacement),
+                }
+            }
+        );
+        return this;
+    }
+
+    // TODO enable once regex flags are supported by CloudFront functions
+    // /**
+    //  * Rewrites a path based on a regex pattern. The content of each group is replace with a corresponding replacement.
+    //  */
+    // rewritePath(pattern: RegExp, replacements: string[]) {
+    //     this.handlerChain.push(
+    //         {
+    //             name: "rewritePathRegexHandler",
+    //             replacements: {
+    //                 "process.env.PATTERN": JSON.stringify(pattern.source),
+    //                 "JSON.parse(process.env.REPLACEMENTS)": JSON.stringify(replacements),
+    //             }
+    //         }
+    //     );
+    //     return this;
+    // }
+
+    /**
      * Adds a HTTP basic auth check.
      * If the checks fails the processing is stopped.
      */
