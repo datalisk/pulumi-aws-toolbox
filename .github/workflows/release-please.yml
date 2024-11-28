@@ -17,7 +17,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18.x'
-      - run: npm ci
+      - run: npm install -g pnpm
+      - run: pnpm install
       - run: npm run build
       # tests broken (probably due to bug with latest git)
       #- run: npm test
