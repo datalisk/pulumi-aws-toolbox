@@ -29,16 +29,22 @@ Resources can be integrated from these sources (see "routes" argument):
  - SingleAsset: a useful utility to serve a single static file e.g. a environment specific config at /config.json
  - Custom: to integrate content served from a different domain / web server.
 
-Moreover, the following things happen under the hood:
-- Automatically handles URL rewrites, so that when the user loads example.com/product, it will internally load product/index.html from S3.
-- HTTPS handled by CloudFront using a free HTTPS certificate from AWS.
+The following things happen under the hood:
+- HTTPS termination is handled by CloudFront using a free HTTPS certificate from AWS.
 - DNS records are created in Route53.
-- Efficient caching for S3. The cache-control response header is set automatically to force the browser to re-validate resources before it can use them. If you have assets that never change, configure them by setting "immutable" for a given S3 route.
-- HTTP basic auth can be enabled to protect the website, e.g. for dev.
+- HTTP basic auth protection can be enabled easily, e.g. for development.
 - Access logs are stored in S3.
-- Automatically sets common HTTP security headers for responses.
+- Automatically sets common security headers for HTTP responses.
 
-Primarily, assets are loaded from S3 (specified by an S3Location). The bucket must be provided by you, for example, using the S3ArtifactStore component. The bucket must be provided by you to cater for cases where
+
+### S3 Integration
+S3 is ideal to serve the content for a static website. To facilitate this the StaticWebsite component does the following:
+
+- Automatically handles URL rewrites. When the user requests '/' we return '/index.html' and if requesting '/about' we will return the /about.html file from S3 (can be configured). To generate correct assets, your frontend framework must be configured correctly.
+  - Svelte: use trailingSlash = 'always' (the default)
+  - Astro: use build.format = 'file'
+- Efficient caching. The cache-control response header is set automatically to force the browser to re-validate resources before it can use them. If you have assets that never change, configure them by setting "immutable" for a given S3 route.
+- Assets are loaded from S3 specified by an S3Location. The bucket must be provided by you, for example, using the S3ArtifactStore component. The bucket must be provided by you to cater for cases where
 the bucket should be shared by several dev stacks and must therefore already exist during the CI build phase (and to support additional settings e.g. cross-account access from prod).
 
 Example:
@@ -64,10 +70,9 @@ artifactStore.createBucketPolicy();
 ```
 Afterwards, upload your website assets into s3://my-artifact-xyz/website/1.0 and you're done.
 
-Other components:
+Internal components:
 * [CloudfrontLogBucket](src/website/CloudfrontLogBucket.ts): Creates a S3 bucket to store CloudFront standard logs.
 * [SingleAssetBucket](src/website/SingleAssetBucket.ts): Creates a S3 bucket where single file assets can be stored for delivery by a CloudFront distribution.
-* [StaticWebsite](src/website/StaticWebsite.ts): Opinionated component for hosting a website. See below for a detailed description.
 * [ViewerRequestFunction/ViewerResponseFunction](src/website/cloudfront-function.ts): Creates a CloudFront function that processes the request/response through a chain of handlers.
 
 

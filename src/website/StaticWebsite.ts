@@ -8,7 +8,6 @@ import { createCloudfrontDnsRecords, defaultSecurityHeadersConfig } from "./util
 
 /**
  * Opinionated component for hosting a website.
- * Creates a CloudFront distribution and a number of supporting resources.
  * See the README.md for the full documentation.
  */
 export class StaticWebsite extends pulumi.ComponentResource {
@@ -34,15 +33,6 @@ export class StaticWebsite extends pulumi.ComponentResource {
                 .withBasicAuth(args.basicAuth.username, args.basicAuth.password)
                 .create()
             : undefined;
-
-        const s3ViewerRequestFunc = args.basicAuth ?
-            new ViewerRequestFunction(`${name}-s3-viewer-request`, this)
-                .withBasicAuth(args.basicAuth.username, args.basicAuth.password)
-                .withIndexRewrite()
-                .create()
-            : new ViewerRequestFunction(`${name}-s3-viewer-request`, this)
-                .withIndexRewrite()
-                .create();
 
         const defaultResponseHeadersPolicy = new aws.cloudfront.ResponseHeadersPolicy(`${name}-default`, {
             securityHeadersConfig: defaultSecurityHeadersConfig,
@@ -96,7 +86,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
 
         const policyCachingDisabled = aws.cloudfront.getCachePolicyOutput({ name: "Managed-CachingDisabled" }).apply(policy => policy.id!!);
 
-        function getCacheBehavior(route: Route): aws.types.input.cloudfront.DistributionDefaultCacheBehavior {
+        const getCacheBehavior = (route: Route): aws.types.input.cloudfront.DistributionDefaultCacheBehavior => {
             if (route.type == RouteType.Custom) {
                 return {
                     targetOriginId: `route-${route.pathPattern}`,
@@ -122,23 +112,31 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn),
                 };
             } else if (route.type == RouteType.S3) {
+                const createRequestFunc = () => {
+                    const routeName = route.pathPattern.replace(/[\W_]+/g,"_");
+                    const func = new ViewerRequestFunction(`${name}-route-${routeName}`, this);
+                    if (args.basicAuth) func.withBasicAuth(args.basicAuth.username, args.basicAuth.password);
+                    func.rewriteWebpagePath(route.trailingSlash == true ? 'SUB_DIR' : 'FILE');
+                    return func.createOrUndefined();
+                }
+
                 return {
                     ...s3CacheBehavior(),
                     targetOriginId: `route-${route.pathPattern}`,
                     responseHeadersPolicyId: route.immutable ? immutableResponseHeadersPolicy.id : defaultResponseHeadersPolicy.id,
-                    functionAssociations: getFunctionAssociations(route.viewerRequestFunctionArn ?? s3ViewerRequestFunc?.arn),
+                    functionAssociations: getFunctionAssociations(route.viewerRequestFunctionArn ?? createRequestFunc()?.arn),
                 };
             } else if (route.type == RouteType.SingleAsset) {
                 return {
                     ...s3CacheBehavior(),
                     targetOriginId: `route-${route.pathPattern}`,
                     responseHeadersPolicyId: defaultResponseHeadersPolicy.id,
-                    functionAssociations: getFunctionAssociations(s3ViewerRequestFunc?.arn),
+                    functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn),
                 };
             } else {
                 throw new Error(`Unsupported route type ${route}`);
             }
-        }
+        };
 
         this.distribution = new aws.cloudfront.Distribution(name, {
             origins: args.routes.map((route => {
@@ -350,6 +348,17 @@ export type S3Route = {
      * EXPERIMENTAL! This property may change or be removed again!
      */
     readonly viewerRequestFunctionArn?: pulumi.Input<string>;
+
+    /**
+     * If 'trailingSlash' is false (the default), trailing slashes are not used.
+     * When the user loads /about, it will internally load /product.html from S3.
+     * When /about/ is requested it will result in a redirect to a URL without the trailing slash.
+     * 
+     * If 'trailingSlash' is true, we append /index.html to requests that end with a slash or don’t include a file extension in the URL.
+     * 
+     * @deprecated will be removed in the next major release, with 'trailingSlash' being false by defailt
+     */
+    readonly trailingSlash?: boolean;
 }
 
 export type SingleAssetRoute = {
