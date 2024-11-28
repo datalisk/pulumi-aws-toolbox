@@ -86,6 +86,23 @@ export class StaticWebsite extends pulumi.ComponentResource {
 
         const policyCachingDisabled = aws.cloudfront.getCachePolicyOutput({ name: "Managed-CachingDisabled" }).apply(policy => policy.id!!);
 
+        const s3CachePolicy1Minute = new aws.cloudfront.CachePolicy(`${name}-s3-1m`, {
+            parametersInCacheKeyAndForwardedToOrigin: {
+                headersConfig: {
+                    headerBehavior: "none",
+                },
+                cookiesConfig: {
+                    cookieBehavior: "none",
+                },
+                queryStringsConfig: {
+                    queryStringBehavior: "none",
+                },
+            },
+            minTtl: 60,
+            defaultTtl: 60,
+            maxTtl: 60,
+        }, { parent: this });
+
         const getCacheBehavior = (route: Route): aws.types.input.cloudfront.DistributionDefaultCacheBehavior => {
             if (route.type == RouteType.Custom) {
                 return {
@@ -113,7 +130,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                 };
             } else if (route.type == RouteType.S3) {
                 const createRequestFunc = () => {
-                    const routeName = route.pathPattern.replace(/[\W_]+/g,"_");
+                    const routeName = route.pathPattern.replace(/[\W_]+/g, "_");
                     const func = new ViewerRequestFunction(`${name}-route-${routeName}`, this);
                     if (args.basicAuth) func.withBasicAuth(args.basicAuth.username, args.basicAuth.password);
                     func.rewriteWebpagePath(route.trailingSlash == true ? 'SUB_DIR' : 'FILE');
@@ -121,15 +138,23 @@ export class StaticWebsite extends pulumi.ComponentResource {
                 }
 
                 return {
-                    ...s3CacheBehavior(),
                     targetOriginId: `route-${route.pathPattern}`,
+                    allowedMethods: ["HEAD", "GET"],
+                    cachedMethods: ["HEAD", "GET"],
+                    compress: true,
+                    viewerProtocolPolicy: "redirect-to-https",
+                    cachePolicyId: route.originCachePolicyId ?? s3CachePolicy1Minute.id,
                     responseHeadersPolicyId: route.immutable ? immutableResponseHeadersPolicy.id : defaultResponseHeadersPolicy.id,
                     functionAssociations: getFunctionAssociations(route.viewerRequestFunctionArn ?? createRequestFunc()?.arn),
                 };
             } else if (route.type == RouteType.SingleAsset) {
                 return {
-                    ...s3CacheBehavior(),
                     targetOriginId: `route-${route.pathPattern}`,
+                    allowedMethods: ["HEAD", "GET"],
+                    cachedMethods: ["HEAD", "GET"],
+                    compress: true,
+                    viewerProtocolPolicy: "redirect-to-https",
+                    cachePolicyId: s3CachePolicy1Minute.id,
                     responseHeadersPolicyId: defaultResponseHeadersPolicy.id,
                     functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn),
                 };
@@ -359,6 +384,11 @@ export type S3Route = {
      * @deprecated will be removed in the next major release, with 'trailingSlash' being false by defailt
      */
     readonly trailingSlash?: boolean;
+
+    /**
+     * Caching policy. By default, resources are cached for one minute.
+     */
+    readonly originCachePolicyId?: pulumi.Input<string>;
 }
 
 export type SingleAssetRoute = {
@@ -374,28 +404,6 @@ export type SingleAssetRoute = {
 export interface BasicAuthArgs {
     readonly username: string;
     readonly password: string;
-}
-
-/**
- * Simple cache behavior for S3 that caches responses for up to one minute.
- */
-function s3CacheBehavior() {
-    return {
-        allowedMethods: ["HEAD", "GET"],
-        cachedMethods: ["HEAD", "GET"],
-        viewerProtocolPolicy: "redirect-to-https",
-        minTtl: 60,
-        defaultTtl: 60,
-        maxTtl: 60,
-        forwardedValues: {
-            cookies: {
-                forward: "none",
-            },
-            headers: [],
-            queryString: false,
-        },
-        compress: true,
-    };
 }
 
 function getFunctionAssociations(viewerRequestFuncArn: pulumi.Input<string> | undefined) {
