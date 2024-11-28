@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.2.1...v1.3.0) (2024-11-28)
+
+
+### Features
+
+* added rewritePathElement feature to ViewerRequestFunction component ([d3b3753](https://github.com/datalisk/pulumi-aws-toolbox/commit/d3b37534a4be2f6063dd2bacbeb26f7ce8bc6819))
+* StaticWebsite is using non-trailing slashes by default now. To keep the previous behavior set "trailingSlash: true" on S3 routes. ([609c248](https://github.com/datalisk/pulumi-aws-toolbox/commit/609c248db45c10d9422c9f678c30e7f652b68b57))
+* StaticWebsite S3 route supports configuring a origin cache policy ([7c97e81](https://github.com/datalisk/pulumi-aws-toolbox/commit/7c97e81486c83f10de47c8b4306c22243c5ab887))
+* ViewerRequestFunction supports rewriting webpage path for a file strategy now. ([67aebeb](https://github.com/datalisk/pulumi-aws-toolbox/commit/67aebeb8c4931a1c1748971bd15d757e0658174d))
+
 ## [1.2.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.2.0...v1.2.1) (2024-10-10)
 
 
