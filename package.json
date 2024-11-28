@@ -1,7 +1,7 @@
 {
-  "name": "@smartstream-tv/pulumi-aws-toolbox",
+  "name": "@datalisk/pulumi-aws-toolbox",
   "repository": {
-    "url": "https://github.com/smartstream-tv/pulumi-aws-toolbox"
+    "url": "https://github.com/datalisk/pulumi-aws-toolbox"
   },
   "bin": {
     "ec2-postgresql-connect": "./bin/ec2-postgresql-connect.sh",

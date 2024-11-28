@@ -1,6 +1,6 @@
 # Pulumi AWS Toolbox
 
-The Pulumi AWS Toolbox is an opinionated library containing components to deploy common application to the AWS cloud.
+The Pulumi AWS Toolbox is an opinionated library containing components to deploy common web applications to the AWS cloud.
 
 It's mostly useful for projects that follow these design ideas:
 * being as serverless as possible, with pay per request AWS resources while avoiding resources that incur a fixed cost per hour
@@ -10,12 +10,12 @@ It's mostly useful for projects that follow these design ideas:
 # Setup
 Install with
 
-    npm i @smartstream-tv/pulumi-aws-toolbox
+    npm i @datalisk/pulumi-aws-toolbox
 
 Import it into your code with
 
 ```typescript
-import * as pat from "@smartstream-tv/pulumi-aws-toolbox";
+import * as pat from "@datalisk/pulumi-aws-toolbox";
 ```
 
 # Components
