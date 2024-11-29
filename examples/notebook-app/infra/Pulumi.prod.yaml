@@ -1,0 +1,4 @@
+encryptionsalt: v1:QETb01+b6WQ=:v1:WoHA1cXTTOPG12N9:V4tZj3xX0tltkXbZV99rwXeV2MQlqQ==
+config:
+  pat-notebook:acmCertificateArn_usEast1: arn:aws:acm:us-east-1:500687833521:certificate/622e6d01-abeb-4aea-8af3-6f99dfeb6df3
+  pat-notebook:hostedZoneId: Z2CLY78SS0IAPN

@@ -20,7 +20,6 @@ export class S3ArtifactStore extends ComponentResource {
         this.name = name;
         this.readAccessRequests = [];
 
-
         this.bucket = new aws.s3.BucketV2(name, {
             forceDestroy: true,
         }, {
@@ -108,6 +107,10 @@ export class S3ArtifactStore extends ComponentResource {
             parent: this,
             dependsOn: [this.publicAccess]
         });
+    }
+
+    getBucketName() {
+        return this.bucket.bucket;
     }
 }
 

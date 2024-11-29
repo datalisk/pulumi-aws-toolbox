@@ -7,6 +7,10 @@ It's mostly useful for projects that follow these design ideas:
 * websites that are mostly static using S3 and CloudFront
 * backends implemented with AWS Lambda
 
+## Demo app
+The [notebook app](https://notebook.datalisk.com) demonstrates the core components of the library. It's an open-source & serverless pastebin alternative, created with just ~100 lines of infrastructure code.
+
+
 # Setup
 Install with
 
