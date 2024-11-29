@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.3.0...v1.4.0) (2024-11-29)
+
+
+### Features
+
+* Provided a demo app (examples/notebook-app). ([657b87b](https://github.com/datalisk/pulumi-aws-toolbox/commit/657b87bb083029110f23fa47ce9df7331bbb0e35))
+
 ## [1.3.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.2.1...v1.3.0) (2024-11-28)
 
 
