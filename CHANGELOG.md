@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.4.0...v1.4.1) (2024-12-17)
+
+
+### Bug Fixes
+
+* CloudfrontLogBucket honors retainOnDelete option now ([0ee1779](https://github.com/datalisk/pulumi-aws-toolbox/commit/0ee1779bfb0445b3417b421bade7950041cc2021))
+* StaticWebsite poluting global scope ([3280706](https://github.com/datalisk/pulumi-aws-toolbox/commit/3280706fe8c7f0e076f5c70df1322dc2b9a79ee3))
+
 ## [1.4.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.3.0...v1.4.0) (2024-11-29)
 
 
