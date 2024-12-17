@@ -5,7 +5,7 @@ import { delayedOutput } from "../util";
 
 /**
  * Creates a S3 bucket to store CloudFront standard logs.
- * On deletion the bucket's content will be deleted too, so configure it as 'protected' if necessary.
+ * On deletion the bucket's content will be deleted too, so configure it as 'protected' or 'retainOnDelete' if necessary.
  */
 export class CloudfrontLogBucket extends ComponentResource {
     readonly bucketRegionalDomainName: pulumi.Output<string>;
@@ -18,6 +18,7 @@ export class CloudfrontLogBucket extends ComponentResource {
         }, {
             parent: this,
             protect: opts?.protect,
+            retainOnDelete: opts?.retainOnDelete,
         });
 
         const encryption = new aws.s3.BucketServerSideEncryptionConfigurationV2(name, {
