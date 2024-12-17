@@ -25,7 +25,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
             throw new Error("The default route must use path pattern '/'");
         }
 
-        const zone = aws.route53.Zone.get("zone", args.hostedZoneId);
+        const zone = aws.route53.Zone.get(`${name}-zone`, args.hostedZoneId, {}, { parent: this });
         this.domain = args.subDomain ? pulumi.interpolate`${args.subDomain}.${zone.name}` : zone.name;
 
         const stdViewerRequestFunc = args.basicAuth ?
