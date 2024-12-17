@@ -218,7 +218,8 @@ export class StaticWebsite extends pulumi.ComponentResource {
             priceClass: "PriceClass_100",
             restrictions: {
                 geoRestriction: {
-                    restrictionType: "none"
+                    restrictionType: "none",
+                    locations: [], // workaround for CloudFront issue when previously locations were configured
                 },
             },
             viewerCertificate: {
