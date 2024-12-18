@@ -163,48 +163,50 @@ export class StaticWebsite extends pulumi.ComponentResource {
             }
         };
 
+        const origins = args.routes.map(((route: Route): aws.types.input.cloudfront.DistributionOrigin => {
+            if (route.type == RouteType.Custom) {
+                return {
+                    originId: `route-${route.pathPattern}`,
+                    domainName: route.originDomainName,
+                    customOriginConfig: {
+                        httpPort: 80,
+                        httpsPort: 443,
+                        originProtocolPolicy: "https-only",
+                        originSslProtocols: ["TLSv1.2"]
+                    },
+                };
+            } else if (route.type == RouteType.Lambda) {
+                return {
+                    originId: `route-${route.pathPattern}`,
+                    domainName: route.functionUrl.functionUrl.apply(url => new URL(url).host),
+                    originAccessControlId: (route.useOriginAccessControl ?? true) ? lambdaOriginAccessControl.id : undefined,
+                    customOriginConfig: {
+                        httpPort: 80,
+                        httpsPort: 443,
+                        originProtocolPolicy: "https-only",
+                        originSslProtocols: ["TLSv1.2"]
+                    },
+                };
+            } else if (route.type == RouteType.S3) {
+                return {
+                    originId: `route-${route.pathPattern}`,
+                    domainName: route.s3Location.getBucket().bucketRegionalDomainName,
+                    originAccessControlId: s3OriginAccessControl.id,
+                    originPath: route.s3Location.getPath().apply(path => path !== '' ? `/${path}` : undefined) as any, // originPath type is declared incorrectly
+                };
+            } else if (route.type == RouteType.SingleAsset) {
+                return {
+                    originId: `route-${route.pathPattern}`,
+                    domainName: singleAssetBucket.getBucket().bucketRegionalDomainName,
+                    originAccessControlId: s3OriginAccessControl.id,
+                };
+            } else {
+                throw new Error(`Unsupported route ${route}`);
+            }
+        }));
+
         this.distribution = new aws.cloudfront.Distribution(name, {
-            origins: args.routes.map((route => {
-                if (route.type == RouteType.Custom) {
-                    return {
-                        originId: `route-${route.pathPattern}`,
-                        domainName: route.originDomainName,
-                        customOriginConfig: {
-                            httpPort: 80,
-                            httpsPort: 443,
-                            originProtocolPolicy: "https-only",
-                            originSslProtocols: ["TLSv1.2"]
-                        },
-                    };
-                } else if (route.type == RouteType.Lambda) {
-                    return {
-                        originId: `route-${route.pathPattern}`,
-                        domainName: route.functionUrl.functionUrl.apply(url => new URL(url).host),
-                        originAccessControlId: (route.useOriginAccessControl ?? true) ? lambdaOriginAccessControl.id : undefined,
-                        customOriginConfig: {
-                            httpPort: 80,
-                            httpsPort: 443,
-                            originProtocolPolicy: "https-only",
-                            originSslProtocols: ["TLSv1.2"]
-                        },
-                    };
-                } else if (route.type == RouteType.S3) {
-                    return {
-                        originId: `route-${route.pathPattern}`,
-                        domainName: route.s3Location.getBucket().bucketRegionalDomainName,
-                        originAccessControlId: s3OriginAccessControl.id,
-                        originPath: route.s3Location.getPath().apply(path => path !== '' ? `/${path}` : undefined),
-                    };
-                } else if (route.type == RouteType.SingleAsset) {
-                    return {
-                        originId: `route-${route.pathPattern}`,
-                        domainName: singleAssetBucket.getBucket().bucketRegionalDomainName,
-                        originAccessControlId: s3OriginAccessControl.id,
-                    };
-                } else {
-                    throw new Error(`Unsupported route ${route}`);
-                }
-            }) as ((route: Route) => aws.types.input.cloudfront.DistributionOrigin)),
+            origins,
             enabled: true,
             isIpv6Enabled: true,
             httpVersion: "http2and3",
