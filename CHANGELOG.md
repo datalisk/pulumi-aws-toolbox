@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.4.1...v1.4.2) (2024-12-19)
+
+
+### Bug Fixes
+
+* StaticWebsite workaround for CloudFront issue when previously locations were configured ([cbc4d0e](https://github.com/datalisk/pulumi-aws-toolbox/commit/cbc4d0efa3814ca5ff861f1329a384c423f8b531))
+
 ## [1.4.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.4.0...v1.4.1) (2024-12-17)
 
 
