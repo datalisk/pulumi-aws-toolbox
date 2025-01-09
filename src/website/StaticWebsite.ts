@@ -379,7 +379,7 @@ export type S3Route = {
 
     /**
      * If 'trailingSlash' is false (the default), trailing slashes are not used.
-     * When the user loads /about, it will internally load /product.html from S3.
+     * When the user loads /about, it will internally load /about.html from S3.
      * When /about/ is requested it will result in a redirect to a URL without the trailing slash.
      * 
      * If 'trailingSlash' is true, we append /index.html to requests that end with a slash or don’t include a file extension in the URL.
