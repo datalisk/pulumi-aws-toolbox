@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.4.2...v1.5.0) (2025-01-23)
+
+
+### Features
+
+* website ViewerRequestFunction supports setting up redirects ([413cdfa](https://github.com/datalisk/pulumi-aws-toolbox/commit/413cdfafb724bd1257e66ca1b6f755860e015e02))
+
 ## [1.4.2](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.4.1...v1.4.2) (2024-12-19)
 
 
