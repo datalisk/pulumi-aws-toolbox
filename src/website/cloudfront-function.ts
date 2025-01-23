@@ -126,6 +126,21 @@ export class ViewerRequestFunction extends CloudfrontChainedFunction {
         return this;
     }
 
+    /**
+     * Responds with a redirect (HTTP 301, Moved Permanently) to the specified URL.
+     */
+    redirectPermanently(redirectUrl: string) {
+        this.handlerChain.push(
+            {
+                name: "redirectHandler",
+                replacements: {
+                    "process.env.REDIRECT_URL": JSON.stringify(redirectUrl),
+                }
+            }
+        );
+        return this;
+    }
+
     // TODO enable once regex flags are supported by CloudFront functions
     // /**
     //  * Rewrites a path based on a regex pattern. The content of each group is replace with a corresponding replacement.
