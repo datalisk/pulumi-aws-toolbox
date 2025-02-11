@@ -1,6 +1,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { CloudfrontLogBucket } from "./CloudfrontLogBucket";
+import { ImmutableResponseHeadersPolicy } from "./ImmutableResponseHeadersPolicy";
 import { S3Location } from "./S3Location";
 import { SingleAssetBucket } from "./SingleAssetBucket";
 import { ViewerRequestFunction } from "./cloudfront-function";
@@ -48,19 +49,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
             aliases: [{ parent: pulumi.rootStackResource }], // fix for missing parent in 1.2.0
         });
 
-        const immutableResponseHeadersPolicy = new aws.cloudfront.ResponseHeadersPolicy(`${name}-immutable`, {
-            securityHeadersConfig: defaultSecurityHeadersConfig,
-            customHeadersConfig: {
-                items: [{
-                    header: "cache-control",
-                    value: "public, max-age=2592000, immutable", // response can be stored in browser cache for 30 days
-                    override: true,
-                }],
-            }
-        }, {
-            parent: this,
-            aliases: [{ parent: pulumi.rootStackResource }], // fix for missing parent in 1.2.0
-        });
+        const immutablePolicy = new ImmutableResponseHeadersPolicy(`${name}-immutable`, {}, { parent: this });
 
         const s3OriginAccessControl = new aws.cloudfront.OriginAccessControl(name, {
             originAccessControlOriginType: "s3",
@@ -144,7 +133,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     compress: true,
                     viewerProtocolPolicy: "redirect-to-https",
                     cachePolicyId: route.originCachePolicyId ?? s3CachePolicy1Minute.id,
-                    responseHeadersPolicyId: route.immutable ? immutableResponseHeadersPolicy.id : defaultResponseHeadersPolicy.id,
+                    responseHeadersPolicyId: route.responseHeadersPolicyId ?? (route.immutable ? immutablePolicy.policyId : defaultResponseHeadersPolicy.id),
                     functionAssociations: getFunctionAssociations(route.viewerRequestFunctionArn ?? createRequestFunc()?.arn),
                 };
             } else if (route.type == RouteType.SingleAsset) {
@@ -355,7 +344,7 @@ export type LambdaRoute = {
  * Serves the given route from a S3 bucket location.
  * Automatically handles URL rewrites, so that when the user loads /product, it will internally load /product/index.html from S3.
  * 
- * You must make sure the bucket as a resource policy that allows read access from CloudFront.
+ * You must make sure the bucket has a resource policy that allows read access from CloudFront.
  * If you're using S3ArtifactStore, this can be achieved by calling it's createBucketPolicy method.
  */
 export type S3Route = {
@@ -366,6 +355,8 @@ export type S3Route = {
     /**
      * The resources can be treated as immutable, meaning, they can be cached forever.
      * Is false by default.
+     * 
+     * @deprecated create a ImmutableResponseHeadersPolicy and use 'responseHeadersPolicyId'. will be removed in the next major release.
      */
     readonly immutable?: boolean;
 
@@ -392,6 +383,15 @@ export type S3Route = {
      * Caching policy. By default, resources are cached for one minute.
      */
     readonly originCachePolicyId?: pulumi.Input<string>;
+
+    /**
+     * The response header policy to be used.
+     * 
+     * By default:
+     * Uses a policy that sets caching headers that allow the browser to cache resources but forces it to re-validate them before each use.
+     * If 'immutable' is true, returns headers that allow the browser to cache resources forever.
+     */
+    readonly responseHeadersPolicyId?: pulumi.Input<string>;
 }
 
 export type SingleAssetRoute = {
