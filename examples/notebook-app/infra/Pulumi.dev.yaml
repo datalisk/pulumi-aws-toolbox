@@ -1,0 +1,4 @@
+encryptionsalt: v1:bJEUMA/vfqk=:v1:UUT5drNPyAQnM3j/:8Y74mhd/lscSRCrIpBEdRkc9UxE57A==
+config:
+  pat-notebook:acmCertificateArn_usEast1: arn:aws:acm:us-east-1:840802545744:certificate/835d7c33-1a50-47a9-9cd5-93894a87fd51
+  pat-notebook:hostedZoneId: Z086350718GU94BU5ONWB

@@ -1,8 +1,6 @@
 name: pat-notebook
 runtime:
   name: nodejs
-  options:
-    packagemanager: pnpm
 description: Infra for PAT notebook app
 config:
   pulumi:tags:
