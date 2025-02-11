@@ -374,8 +374,6 @@ export type S3Route = {
      * When /about/ is requested it will result in a redirect to a URL without the trailing slash.
      * 
      * If 'trailingSlash' is true, we append /index.html to requests that end with a slash or don’t include a file extension in the URL.
-     * 
-     * @deprecated will be removed in the next major release, with 'trailingSlash' being false by defailt
      */
     readonly trailingSlash?: boolean;
 
