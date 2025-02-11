@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.5.0...v1.6.0) (2025-02-11)
+
+
+### Features
+
+* StaticWebsite supports setting responseHeadersPolicyId on s3 routes. deprecates the 'immutable' property. ([d5148f7](https://github.com/datalisk/pulumi-aws-toolbox/commit/d5148f73e7fd6af369a3e9dde627b37f0e11ffbe))
+
 ## [1.5.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.4.2...v1.5.0) (2025-01-23)
 
 
