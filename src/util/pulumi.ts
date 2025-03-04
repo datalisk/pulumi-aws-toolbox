@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 
-export async function resolveOutput<T>(input: pulumi.Output<T>) {
+export async function resolveOutput<T>(input: pulumi.Output<T>): Promise<T> {
     return new Promise((resolve, reject) => {
         try {
             input.apply(resolve);

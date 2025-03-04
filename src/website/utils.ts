@@ -42,3 +42,26 @@ export const defaultSecurityHeadersConfig: aws.types.input.cloudfront.ResponseHe
         override: false,
     },
 };
+
+/**
+ * Returns a policy statement to grant CloudFront read access to the given bucket path.
+ * @param pathPattern e.g. '*' or 'content/*'
+ */
+export function createBucketPolicyStatement(bucketArn: pulumi.Input<aws.ARN>, distributionArn: pulumi.Input<aws.ARN>, pathPattern: pulumi.Input<string>): aws.iam.PolicyStatement {
+    return {
+        Effect: "Allow",
+        Principal: {
+            Service: "cloudfront.amazonaws.com"
+        },
+        Action: ["s3:ListBucket", "s3:GetObject"],
+        Resource: [
+            bucketArn,
+            pulumi.interpolate`${bucketArn}/${pathPattern}`
+        ],
+        Condition: {
+            StringEquals: {
+                "AWS:SourceArn": distributionArn
+            }
+        }
+    };
+}

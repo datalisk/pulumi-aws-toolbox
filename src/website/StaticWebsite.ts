@@ -1,11 +1,12 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { S3Folder } from "../ci/S3Folder";
 import { CloudfrontLogBucket } from "./CloudfrontLogBucket";
 import { ImmutableResponseHeadersPolicy } from "./ImmutableResponseHeadersPolicy";
 import { S3Location } from "./S3Location";
 import { SingleAssetBucket } from "./SingleAssetBucket";
 import { ViewerRequestFunction } from "./cloudfront-function";
-import { createCloudfrontDnsRecords, defaultSecurityHeadersConfig } from "./utils";
+import { createBucketPolicyStatement, createCloudfrontDnsRecords, defaultSecurityHeadersConfig } from "./utils";
 
 /**
  * Opinionated component for hosting a website.
@@ -14,6 +15,7 @@ import { createCloudfrontDnsRecords, defaultSecurityHeadersConfig } from "./util
 export class StaticWebsite extends pulumi.ComponentResource {
     readonly name: string;
     readonly domain: pulumi.Output<string>;
+    readonly distributionArn: pulumi.Output<string>;
 
     private distribution: aws.cloudfront.Distribution;
 
@@ -177,11 +179,12 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     },
                 };
             } else if (route.type == RouteType.S3) {
+                const s3Folder = getS3Folder(route);
                 return {
                     originId: `route-${route.pathPattern}`,
-                    domainName: route.s3Location.getBucket().bucketRegionalDomainName,
+                    domainName: pulumi.output(s3Folder.bucket).bucketRegionalDomainName,
                     originAccessControlId: s3OriginAccessControl.id,
-                    originPath: route.s3Location.getPath().apply(path => path !== '' ? `/${path}` : undefined) as any, // originPath type is declared incorrectly
+                    originPath: pulumi.output(s3Folder.path).apply(path => path !== '' ? `/${path}` : undefined) as any, // originPath type is declared incorrectly
                 };
             } else if (route.type == RouteType.SingleAsset) {
                 return {
@@ -238,7 +241,14 @@ export class StaticWebsite extends pulumi.ComponentResource {
 
         // request read access to S3
         args.routes.filter(r => r.type == RouteType.S3).forEach(route => {
-            route.s3Location.requestCloudfrontReadAccess(this.distribution.arn);
+            if (route.s3Folder) {
+                if (route.s3Folder.addBucketPolicyStatement) {
+                    const statement = createBucketPolicyStatement(route.s3Folder.bucket.arn, this.distribution.arn, pulumi.interpolate`${route.s3Folder.path}/*`);
+                    route.s3Folder.addBucketPolicyStatement(statement);
+                }
+            } else {
+                route.s3Location!.requestCloudfrontReadAccess(this.distribution.arn);
+            }
         });
 
         // grant ourselves access to relevant lambda function URLs
@@ -258,6 +268,8 @@ export class StaticWebsite extends pulumi.ComponentResource {
             parent: this,
             aliases: [{ parent: pulumi.rootStackResource }], // if there was a existing resource with the same name, use it
         });
+
+        this.distributionArn = this.distribution.arn;
     }
 }
 
@@ -350,7 +362,18 @@ export type LambdaRoute = {
 export type S3Route = {
     readonly type: RouteType.S3;
     readonly pathPattern: string;
-    readonly s3Location: S3Location;
+
+    /**
+     * Either 's3Location' or 's3Folder' must be specified.
+     * @deprecated use 's3Folder'
+     */
+    readonly s3Location?: S3Location;
+
+    /**
+     * Where the static assets are stored in S3.
+     * Either 's3Location' or 's3Folder' must be specified.
+     */
+    readonly s3Folder?: S3Folder;
 
     /**
      * The resources can be treated as immutable, meaning, they can be cached forever.
@@ -412,4 +435,22 @@ function getFunctionAssociations(viewerRequestFuncArn: pulumi.Input<string> | un
         eventType: `viewer-request`,
         functionArn: viewerRequestFuncArn,
     }] : undefined;
+}
+
+function getS3Folder(s3Route: S3Route): S3Folder {
+    if (s3Route.s3Folder && s3Route.s3Location) throw new Error(`Either 's3Location' or 's3Folder' must be specified, not both.`);
+
+    if (s3Route.s3Folder !== undefined) {
+        return s3Route.s3Folder;
+    } else if (s3Route.s3Location !== undefined) {
+        return {
+            bucket: s3Route.s3Location.getBucket(),
+            path: s3Route.s3Location.getPath(),
+            addBucketPolicyStatement: () => {
+                throw new Error(`Unsupported on legacy S3Location object`);
+            },
+        }
+    } else {
+        throw new Error(`Either 's3Location' or 's3Folder' must be specified.`);
+    }
 }

@@ -3,6 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 /**
  * References data stored in a S3 folder.
+ * @deprecated use S3Folder
  */
 export class S3Location {
 

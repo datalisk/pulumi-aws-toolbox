@@ -1,7 +1,7 @@
-import * as aws from "@pulumi/aws";
-import * as pulumi from "@pulumi/pulumi";
 import * as pat from "@datalisk/pulumi-aws-toolbox";
 import { RouteType } from "@datalisk/pulumi-aws-toolbox/dist/website";
+import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 
 const resourcePrefix = `notebook-${pulumi.getStack()}`;
 const config = new pulumi.Config();
@@ -41,35 +41,9 @@ const backendFunctionUrl = new aws.lambda.FunctionUrl(`${resourcePrefix}-backend
 
 
 // Get a reference to where the frontend assets are stored
-const frontendArtifactStore = new pat.build.S3ArtifactStore(`${resourcePrefix}-artifact`, { artifactName: "frontend" });
-const frontendLocation = frontendArtifactStore.getArtifactVersion("latest");
+const artifactStore = new pat.ci.S3ArtifactStore(`${resourcePrefix}-artifact`);
+const frontendArtifact = artifactStore.getArtifact("frontend", "latest");
 
-// Get a reference to the stored notebook files in S3
-const contentLocation = new pat.website.S3Location(contentBucket, '', (distributionArn) => {
-    // after distribution is created -> grant read access to S3 bucket
-    new aws.s3.BucketPolicy(`${resourcePrefix}-content`, {
-        bucket: contentBucket.bucket,
-        policy: {
-            Version: "2012-10-17",
-            Statement: [{
-                Effect: "Allow",
-                Principal: {
-                    Service: "cloudfront.amazonaws.com"
-                },
-                Action: ["s3:ListBucket", "s3:GetObject"],
-                Resource: [
-                    contentBucket.arn,
-                    pulumi.interpolate`${contentBucket.arn}/content/*`
-                ],
-                Condition: {
-                    StringEquals: {
-                        "AWS:SourceArn": distributionArn
-                    }
-                }
-            }],
-        },
-    });
-});
 
 // Creating the Cloudfront Distribution
 const website = new pat.website.StaticWebsite(`${resourcePrefix}-website`, {
@@ -86,13 +60,13 @@ const website = new pat.website.StaticWebsite(`${resourcePrefix}-website`, {
         // serve download notebook files for direct download
         type: RouteType.S3,
         pathPattern: '/content/*',
-        s3Location: contentLocation,
+        s3Folder: { bucket: contentBucket, path: '' },
         originCachePolicyId: aws.cloudfront.getCachePolicyOutput({ name: "Managed-CachingDisabled" }).apply(policy => policy.id!!),
     }, {
         // rewrite and serve notebook UI (request to /n/abc123 served with /n/0.html)
         type: RouteType.S3,
         pathPattern: "/n/*",
-        s3Location: frontendLocation,
+        s3Folder: frontendArtifact,
         viewerRequestFunctionArn: new pat.website.ViewerRequestFunction(`${resourcePrefix}-notebook-rewrite`)
             .rewritePathElement(1, "0.html")
             .create().arn
@@ -100,12 +74,24 @@ const website = new pat.website.StaticWebsite(`${resourcePrefix}-website`, {
         // default: serve static frontend assets
         type: RouteType.S3,
         pathPattern: "/",
-        s3Location: frontendLocation,
+        s3Folder: frontendArtifact,
     }],
 });
 
-// Allow CloudFront to read the frontend assets from S3
-frontendArtifactStore.createBucketPolicy();
+// After distribution is created:
+// Create policy to allow CloudFront to read the frontend assets from S3
+artifactStore.createBucketPolicy();
 
-export const frontendArtifactBucket = frontendArtifactStore.getBucketName();
+// Create policy to allow CloudFront to read notebook contents
+new aws.s3.BucketPolicy(`${resourcePrefix}-content`, {
+    bucket: contentBucket.bucket,
+    policy: {
+        Version: "2012-10-17",
+        Statement: [
+            pat.website.createBucketPolicyStatement(contentBucket.arn, website.distributionArn, '*'),
+        ],
+    },
+});
+
+export const frontendArtifactBucket = artifactStore.getBucketName();
 export const websiteDomain = website.domain;
