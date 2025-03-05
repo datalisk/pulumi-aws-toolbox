@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.6.0...v1.7.0) (2025-03-05)
+
+
+### Features
+
+* added ci.createS3ArtifactBuild for CI builds powered by pulumi (experimental) ([7ea5b04](https://github.com/datalisk/pulumi-aws-toolbox/commit/7ea5b0482550c4ab560b1c9bd8adadb18db1ab03))
+* deprecated S3Location in favor of more general S3Folder interface. added new ci.S3ArtifactStore. ([cdef315](https://github.com/datalisk/pulumi-aws-toolbox/commit/cdef315a3cd6c717578b37ab45a983124aaf1422))
+
 ## [1.6.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.5.0...v1.6.0) (2025-02-11)
 
 
