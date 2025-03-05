@@ -42,8 +42,20 @@ const backendFunctionUrl = new aws.lambda.FunctionUrl(`${resourcePrefix}-backend
 
 // Get a reference to where the frontend assets are stored
 const artifactStore = new pat.ci.S3ArtifactStore(`${resourcePrefix}-artifact`);
-const frontendArtifact = artifactStore.getArtifact("frontend", "latest");
 
+// Register CI job to build frontend artifact
+const frontendArtifact = pat.ci.createS3ArtifactBuild(`${resourcePrefix}-frontend`, {
+    artifactStore,
+    artifactName: "frontend",
+    buildSpec: {
+        sourceDir: "../frontend",
+        commands: [
+            "pnpm i",
+            "pnpm run build",
+        ],
+        outputDir: "../frontend/build",
+    },
+});
 
 // Creating the Cloudfront Distribution
 const website = new pat.website.StaticWebsite(`${resourcePrefix}-website`, {
