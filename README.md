@@ -48,15 +48,13 @@ S3 is ideal to serve the content for a static website. To facilitate this the St
   - Svelte: use trailingSlash = 'always' (the default)
   - Astro: use build.format = 'file'
 - Efficient caching. The cache-control response header is set automatically to force the browser to re-validate resources before it can use them. If you have assets that never change, configure them by setting "immutable" for a given S3 route.
-- Assets are loaded from S3 specified by an S3Location. The bucket must be provided by you, for example, using the S3ArtifactStore component. The bucket must be provided by you to cater for cases where
+- Assets are loaded from S3 specified by an S3Folder. The bucket must be provided by you, for example, using the S3ArtifactStore component. The bucket must be provided by you to cater for cases where
 the bucket should be shared by several dev stacks and must therefore already exist during the CI build phase (and to support additional settings e.g. cross-account access from prod).
 
 Example:
 ```typescript
 // Create a S3 bucket where the website assets are stored
-const artifactStore = new pat.build.S3ArtifactStore(`my-artifact`, {
-    artifactName: "website",
-});
+const artifactStore = new pat.build.S3ArtifactStore(`my-artifact`);
 
 // Create the CloudFront distribution
 new pat.website.StaticWebsite(`my-website`, {
@@ -65,7 +63,7 @@ new pat.website.StaticWebsite(`my-website`, {
     routes: [{
         type: RouteType.S3,
         pathPattern: "/",
-        s3Location: artifactStore.getArtifactVersion("1.0"),
+        s3Folder: artifactStore.getArtifact("website", "1.0"),
     }],
 });
 
