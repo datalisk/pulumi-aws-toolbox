@@ -18,7 +18,8 @@ export async function s3PutFolder(localDir: string, bucketName: string, bucketFo
   await s3Client.send(new PutObjectCommand({
     Bucket: bucketName,
     Key: bucketFolder.endsWith('/') ? bucketFolder : `${bucketFolder}/`, // ensure trailing slash
-    Body: ''
+    Body: '',
+    ContentLength: 0,
   }));
 
   async function uploadDirectory(dirPath: string) {

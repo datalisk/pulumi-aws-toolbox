@@ -14,6 +14,7 @@ export class S3ArtifactStore extends ComponentResource {
     private name: string;
     private publicAccess: aws.s3.BucketPublicAccessBlock;
     private policyStatements: aws.iam.PolicyStatement[];
+    private allowAddPolicyStatements = true;
 
     constructor(name: string, args?: S3ArtifactStoreArgs, opts?: ComponentResourceOptions) {
         super("pat:ci:S3ArtifactStore", name, args, {
@@ -80,15 +81,24 @@ export class S3ArtifactStore extends ComponentResource {
             bucket: this.bucket,
             path: path,
             addBucketPolicyStatement: (statement) => {
-                this.policyStatements.push(statement);
+                this.addPolicyStatement(statement);
             },
         };
+    }
+
+    private addPolicyStatement(statement: aws.iam.PolicyStatement) {
+        if (!this.allowAddPolicyStatements) {
+            throw new Error(`Not allowed to add policies - createBucketPolicy has already been called`);
+        }
+        this.policyStatements.push(statement);
     }
 
     /**
      * Creates a bucket resource policy for the added policy statements.
      */
     createBucketPolicy() {
+        this.allowAddPolicyStatements = false;
+
         if (this.policyStatements.length > 0) {
             new aws.s3.BucketPolicy(this.name, {
                 bucket: this.bucket.id,

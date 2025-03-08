@@ -29,7 +29,8 @@
 		<p>
 			A open-source and serverless pastebin alternative.<br />
 			It's a demonstration app for
-			<a href="https://github.com/datalisk/pulumi-aws-toolbox">pulumi-aws-toolbox</a>.
+			<a href="https://github.com/datalisk/pulumi-aws-toolbox">pulumi-aws-toolbox</a>,<br/>
+			a library for deploying serverless web apps to the AWS cloud.
 		</p>
 
         <div class="mt-8">

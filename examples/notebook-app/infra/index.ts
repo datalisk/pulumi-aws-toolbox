@@ -39,18 +39,15 @@ const backendFunctionUrl = new aws.lambda.FunctionUrl(`${resourcePrefix}-backend
     authorizationType: "NONE",
 });
 
-
-// Get a reference to where the frontend assets are stored
+// Build and deploy the frontend artifact to S3
 const artifactStore = new pat.ci.S3ArtifactStore(`${resourcePrefix}-artifact`);
-
-// Register CI job to build frontend artifact
 const frontendArtifact = pat.ci.createS3ArtifactBuild(`${resourcePrefix}-frontend`, {
     artifactStore,
     artifactName: "frontend",
     buildSpec: {
         sourceDir: "../frontend",
         commands: [
-            "pnpm i",
+            "pnpm install",
             "pnpm run build",
         ],
         outputDir: "../frontend/build",
@@ -61,7 +58,7 @@ const frontendArtifact = pat.ci.createS3ArtifactBuild(`${resourcePrefix}-fronten
 const website = new pat.website.StaticWebsite(`${resourcePrefix}-website`, {
     acmCertificateArn_usEast1: config.require("acmCertificateArn_usEast1"),
     hostedZoneId: config.require("hostedZoneId"),
-    subDomain: 'notebook',
+    subDomain: pulumi.getStack() == "prod" ? "notebook" : resourcePrefix,
     // basicAuth: { username: "development", password: "bigsecret" }, // enable for a non-public website
     routes: [{
         // serve backend to store notebooks in S3
@@ -75,7 +72,7 @@ const website = new pat.website.StaticWebsite(`${resourcePrefix}-website`, {
         s3Folder: { bucket: contentBucket, path: '' },
         originCachePolicyId: aws.cloudfront.getCachePolicyOutput({ name: "Managed-CachingDisabled" }).apply(policy => policy.id!!),
     }, {
-        // rewrite and serve notebook UI (request to /n/abc123 served with /n/0.html)
+        // rewrite and serve notebook UI (i.e. a request to /n/abc123 is served with /n/0.html)
         type: RouteType.S3,
         pathPattern: "/n/*",
         s3Folder: frontendArtifact,

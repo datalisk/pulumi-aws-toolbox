@@ -9,7 +9,11 @@ import { S3Folder } from "./S3Folder";
 /**
  * Registers a CI build for the given artifact.
  * 
- * Highly experimental API! Will likely change.
+ * The artifact version is the Git commit hash when the source dir was last changed.
+ * The artifact will be built and deployed when the artifact version is not yet present in the S3ArtifactStore.
+ * Therfore, only new commits that change the source dir will trigger a rebuild.
+ *  
+ * EXPERIMENTAL! This API may change!
  * 
  * @param name logical resource name
  * @param args 
@@ -19,13 +23,15 @@ export function createS3ArtifactBuild(name: string, args: CreateArtifactArgs): S
     const artifactVersion = pulumi.output(getVersion(args.buildSpec.sourceDir));
     const artifact = args.artifactStore.getArtifact(args.artifactName, artifactVersion);
 
-    new S3ArtifactBuild(name, {
+    const build = new S3ArtifactBuild(name, {
         bucketName: artifact.bucket.bucket,
         bucketPath: artifact.path,
         buildSpec: args.buildSpec,
     });
 
-    return artifact;
+    // return a S3Folder instance, that depends on the build.
+    // ensures CloudFront etc doesn't get updated before the build succeeds.
+    return args.artifactStore.getArtifact(args.artifactName, build.id.apply(() => artifactVersion));
 }
 
 export interface CreateArtifactArgs {
