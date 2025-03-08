@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.7.0...v1.7.1) (2025-03-08)
+
+
+### Bug Fixes
+
+* ci.createS3ArtifactBuild result depends on a successful build now. improved docs. ([d764141](https://github.com/datalisk/pulumi-aws-toolbox/commit/d764141aeae499f982edb7bc06eb0f498a1387d8))
+
 ## [1.7.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.6.0...v1.7.0) (2025-03-05)
 
 
