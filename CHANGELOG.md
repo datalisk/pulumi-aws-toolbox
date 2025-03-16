@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.7.1...v1.7.2) (2025-03-16)
+
+
+### Bug Fixes
+
+* added missing export for ImmutableResponseHeadersPolicy ([48f883f](https://github.com/datalisk/pulumi-aws-toolbox/commit/48f883fe18d1315fdb2e9b9ceb32ea6b716110bf))
+
 ## [1.7.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.7.0...v1.7.1) (2025-03-08)
 
 
