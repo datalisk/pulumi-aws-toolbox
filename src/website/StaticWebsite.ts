@@ -51,7 +51,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
             aliases: [{ parent: pulumi.rootStackResource }], // fix for missing parent in 1.2.0
         });
 
-        const immutablePolicy = new ImmutableResponseHeadersPolicy(`${name}-immutable`, {}, { parent: this });
+        const createImmutablePolicy = () => new ImmutableResponseHeadersPolicy(`${name}-immutable`, { days: 30 }, { parent: this });
 
         const s3OriginAccessControl = new aws.cloudfront.OriginAccessControl(name, {
             originAccessControlOriginType: "s3",
@@ -135,7 +135,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     compress: true,
                     viewerProtocolPolicy: "redirect-to-https",
                     cachePolicyId: route.originCachePolicyId ?? s3CachePolicy1Minute.id,
-                    responseHeadersPolicyId: route.responseHeadersPolicyId ?? (route.immutable ? immutablePolicy.policyId : defaultResponseHeadersPolicy.id),
+                    responseHeadersPolicyId: route.responseHeadersPolicyId ?? (route.immutable ? createImmutablePolicy().policyId : defaultResponseHeadersPolicy.id),
                     functionAssociations: getFunctionAssociations(route.viewerRequestFunctionArn ?? createRequestFunc()?.arn),
                 };
             } else if (route.type == RouteType.SingleAsset) {
