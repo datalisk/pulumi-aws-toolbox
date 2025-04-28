@@ -25,6 +25,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
 
         const defaultRoute = args.routes.at(-1)!;
         if (defaultRoute.pathPattern !== "/") {
+            // TODO use '/*' as default path pattern, to clarify that it is a wildcard match
             throw new Error("The default route must use path pattern '/'");
         }
 

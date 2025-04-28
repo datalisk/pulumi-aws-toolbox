@@ -127,6 +127,22 @@ export class ViewerRequestFunction extends CloudfrontChainedFunction {
     }
 
     /**
+     * Rewrites the requested path to the given path.
+     * @param path a path, starting with a slash
+     */
+    rewritePathTo(path: string) {
+        this.handlerChain.push(
+            {
+                name: "rewritePathToHandler",
+                replacements: {
+                    "process.env.PATH": JSON.stringify(path),
+                }
+            }
+        );
+        return this;
+    }
+
+    /**
      * Responds with a redirect (HTTP 301, Moved Permanently) to the specified URL.
      */
     redirectPermanently(redirectUrl: string) {
