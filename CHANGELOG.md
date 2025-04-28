@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.7.2...v1.8.0) (2025-04-28)
+
+
+### Features
+
+* added website.ViewerRequestFunction  rewritePathTo function ([43d001b](https://github.com/datalisk/pulumi-aws-toolbox/commit/43d001b809f24b48d38adaa524ea5d60cf6a04f5))
+
 ## [1.7.2](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.7.1...v1.7.2) (2025-03-16)
 
 
