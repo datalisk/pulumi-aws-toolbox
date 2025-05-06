@@ -106,7 +106,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     viewerProtocolPolicy: "redirect-to-https",
                     originRequestPolicyId: aws.cloudfront.getOriginRequestPolicyOutput({ name: 'Managed-AllViewer' }).apply(policy => policy.id!!),
                     responseHeadersPolicyId: defaultResponseHeadersPolicy.id,
-                    functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn),
+                    functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn, undefined),
                 };
             } else if (route.type == RouteType.Lambda) {
                 return {
@@ -118,7 +118,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     viewerProtocolPolicy: "redirect-to-https",
                     originRequestPolicyId: aws.cloudfront.getOriginRequestPolicyOutput({ name: 'Managed-AllViewerExceptHostHeader' }).apply(policy => policy.id!!),
                     responseHeadersPolicyId: defaultResponseHeadersPolicy.id,
-                    functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn),
+                    functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn, undefined),
                 };
             } else if (route.type == RouteType.S3) {
                 const createRequestFunc = () => {
@@ -128,6 +128,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     func.rewriteWebpagePath(route.trailingSlash == true ? 'SUB_DIR' : 'FILE');
                     return func.createOrUndefined();
                 }
+                const viewerResponseFuncArn = route.viewerRequestFunctionArn ?? createRequestFunc()?.arn;
 
                 return {
                     targetOriginId: `route-${route.pathPattern}`,
@@ -137,7 +138,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     viewerProtocolPolicy: "redirect-to-https",
                     cachePolicyId: route.originCachePolicyId ?? s3CachePolicy1Minute.id,
                     responseHeadersPolicyId: route.responseHeadersPolicyId ?? (route.immutable ? createImmutablePolicy().policyId : defaultResponseHeadersPolicy.id),
-                    functionAssociations: getFunctionAssociations(route.viewerRequestFunctionArn ?? createRequestFunc()?.arn),
+                    functionAssociations: getFunctionAssociations(viewerResponseFuncArn, route.viewerResponseFunctionArn),
                 };
             } else if (route.type == RouteType.SingleAsset) {
                 return {
@@ -148,7 +149,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     viewerProtocolPolicy: "redirect-to-https",
                     cachePolicyId: s3CachePolicy1Minute.id,
                     responseHeadersPolicyId: defaultResponseHeadersPolicy.id,
-                    functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn),
+                    functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn, undefined),
                 };
             } else {
                 throw new Error(`Unsupported route type ${route}`);
@@ -385,12 +386,15 @@ export type S3Route = {
     readonly immutable?: boolean;
 
     /**
-     * Optionally, specify your own viewer request function.
+     * Optionally, specify your own viewer request function (instead of using our default).
      * If configured, basic auth protection is not available for this route.
-     * 
-     * EXPERIMENTAL! This property may change or be removed again!
      */
     readonly viewerRequestFunctionArn?: pulumi.Input<string>;
+
+    /**
+     * Optionally, specify a viewer response function.
+     */
+    readonly viewerResponseFunctionArn?: pulumi.Input<string>;
 
     /**
      * If 'trailingSlash' is false (the default), trailing slashes are not used.
@@ -431,11 +435,24 @@ export interface BasicAuthArgs {
     readonly password: string;
 }
 
-function getFunctionAssociations(viewerRequestFuncArn: pulumi.Input<string> | undefined) {
-    return viewerRequestFuncArn !== undefined ? [{
-        eventType: `viewer-request`,
-        functionArn: viewerRequestFuncArn,
-    }] : undefined;
+function getFunctionAssociations(viewerRequestFuncArn: pulumi.Input<string> | undefined, viewerResponseFuncArn: pulumi.Input<string> | undefined) {
+    const associations = [];
+
+    if (viewerRequestFuncArn != undefined) {
+        associations.push({
+            eventType: `viewer-request`,
+            functionArn: viewerRequestFuncArn,
+        });
+    }
+
+    if (viewerResponseFuncArn != undefined) {
+        associations.push({
+            eventType: `viewer-response`,
+            functionArn: viewerResponseFuncArn,
+        });
+    }
+
+    return associations.length > 0 ? associations : undefined;
 }
 
 function getS3Folder(s3Route: S3Route): S3Folder {

@@ -196,6 +196,14 @@ export class ViewerResponseFunction extends CloudfrontChainedFunction {
         super(name, "viewer-response", parent);
     }
 
+    statusCode(statusCode: number) {
+        this.handlerChain.push({
+            name: "statusCodeHandler",
+            replacements: { "process.env.STATUS_CODE": `${statusCode}` },
+        });
+        return this;
+    }
+
     /**
      * Sets the cache-control header to control browser caching.
      * @param immutable if resources can be treated as immutable (will be cached by up to a year)
