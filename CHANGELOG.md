@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.8.0...v1.9.0) (2025-05-06)
+
+
+### Features
+
+* StaticWebsite s3 route supports setting viewerResponseFunctionArn. allows changing response status code ([02b5fb8](https://github.com/datalisk/pulumi-aws-toolbox/commit/02b5fb8e7eed6077bf9f68c7ceaac3f46b8f8dcd))
+
 ## [1.8.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.7.2...v1.8.0) (2025-04-28)
 
 
