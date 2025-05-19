@@ -11,6 +11,9 @@ Notebook leverages a fully serverless architecture to keep AWS costs nearly $0. 
 - **Static Assets:** Hosted on Amazon S3.
 - **Content Delivery:** Using Amazon CloudFront.
 
+This is the architecture of our app:
+![Architecture](./architecture.drawio.png)
+
 A live demo is available at [https://notebook.datalisk.com](https://notebook.datalisk.com).
 
 
