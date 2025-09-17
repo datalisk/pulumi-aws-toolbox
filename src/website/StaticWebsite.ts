@@ -104,7 +104,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     cachePolicyId: route.cachePolicyId ?? policyCachingDisabled,
                     compress: true,
                     viewerProtocolPolicy: "redirect-to-https",
-                    originRequestPolicyId: aws.cloudfront.getOriginRequestPolicyOutput({ name: 'Managed-AllViewer' }).apply(policy => policy.id!!),
+                    originRequestPolicyId: route.originRequestPolicyId ?? aws.cloudfront.getOriginRequestPolicyOutput({ name: 'Managed-AllViewer' }).apply(policy => policy.id!!),
                     responseHeadersPolicyId: defaultResponseHeadersPolicy.id,
                     functionAssociations: getFunctionAssociations(stdViewerRequestFunc?.arn, undefined),
                 };
@@ -326,6 +326,8 @@ export type CustomRoute = {
      * Caching policy. By default, caching is disabled.
      */
     readonly cachePolicyId?: pulumi.Input<string>;
+    
+    readonly originRequestPolicyId?: pulumi.Input<string>;
 }
 
 /**
