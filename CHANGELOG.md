@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.9.0...v1.10.0) (2025-09-17)
+
+
+### Features
+
+* StaticWebsite Custom route allowing to set originRequestPolicyId ([21d1bc2](https://github.com/datalisk/pulumi-aws-toolbox/commit/21d1bc268e1480d7f48177d1ae7bad13b08f5e1f))
+
 ## [1.9.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.8.0...v1.9.0) (2025-05-06)
 
 
