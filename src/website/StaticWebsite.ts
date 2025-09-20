@@ -242,6 +242,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                 bucket: logBucket.bucketRegionalDomainName,
                 includeCookies: false
             },
+            webAclId: args.webAclId,
             waitForDeployment: false,
         }, {
             parent: this,
@@ -310,6 +311,8 @@ export interface WebsiteArgs {
      * The subdomain within the hosted zone or null if the zone apex should be used.
      */
     readonly subDomain?: string;
+
+    readonly webAclId?: pulumi.Input<string>;
 }
 
 export type Route = CustomRoute | LambdaRoute | S3Route | SingleAssetRoute | VpcRoute;
@@ -335,7 +338,7 @@ export type CustomRoute = {
      * Caching policy. By default, caching is disabled.
      */
     readonly cachePolicyId?: pulumi.Input<string>;
-
+    
     readonly originRequestPolicyId?: pulumi.Input<string>;
 }
 
@@ -351,7 +354,7 @@ export type VpcRoute = {
      * Caching policy. By default, caching is disabled.
      */
     readonly cachePolicyId?: pulumi.Input<string>;
-
+    
     readonly originRequestPolicyId?: pulumi.Input<string>;
 }
 
