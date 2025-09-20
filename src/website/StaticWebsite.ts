@@ -96,7 +96,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
         }, { parent: this });
 
         const getCacheBehavior = (route: Route): aws.types.input.cloudfront.DistributionDefaultCacheBehavior => {
-            if (route.type == RouteType.Custom) {
+            if (route.type == RouteType.Custom || route.type == RouteType.VPC) {
                 return {
                     targetOriginId: `route-${route.pathPattern}`,
                     allowedMethods: ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"],
@@ -166,6 +166,14 @@ export class StaticWebsite extends pulumi.ComponentResource {
                         httpsPort: 443,
                         originProtocolPolicy: "https-only",
                         originSslProtocols: ["TLSv1.2"]
+                    },
+                };
+            } else if (route.type == RouteType.VPC) {
+                return {
+                    originId: `route-${route.pathPattern}`,
+                    domainName: route.originDomainName,
+                    vpcOriginConfig: {
+                        vpcOriginId: route.vpcOriginId,
                     },
                 };
             } else if (route.type == RouteType.Lambda) {
@@ -304,13 +312,14 @@ export interface WebsiteArgs {
     readonly subDomain?: string;
 }
 
-export type Route = CustomRoute | LambdaRoute | S3Route | SingleAssetRoute;
+export type Route = CustomRoute | LambdaRoute | S3Route | SingleAssetRoute | VpcRoute;
 
 export enum RouteType {
     Custom,
     Lambda,
     SingleAsset,
     S3,
+    VPC,
 }
 
 /**
@@ -326,7 +335,23 @@ export type CustomRoute = {
      * Caching policy. By default, caching is disabled.
      */
     readonly cachePolicyId?: pulumi.Input<string>;
-    
+
+    readonly originRequestPolicyId?: pulumi.Input<string>;
+}
+
+export type VpcRoute = {
+    readonly type: RouteType.VPC;
+    readonly pathPattern: string;
+
+    readonly vpcOriginId: pulumi.Input<string>;
+
+    readonly originDomainName: pulumi.Input<string>;
+
+    /**
+     * Caching policy. By default, caching is disabled.
+     */
+    readonly cachePolicyId?: pulumi.Input<string>;
+
     readonly originRequestPolicyId?: pulumi.Input<string>;
 }
 
