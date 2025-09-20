@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.11.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.10.0...v1.11.0) (2025-09-20)
+
+
+### Features
+
+* StaticWebsite Vpc routes ([da12f85](https://github.com/datalisk/pulumi-aws-toolbox/commit/da12f8552d45a7529b7ed3929999a62844f00889))
+* StaticWebsite waf support ([5487d55](https://github.com/datalisk/pulumi-aws-toolbox/commit/5487d55515e445de7f4237e47d598f7b40161949))
+* updated pulumi dependencies ([d942f4c](https://github.com/datalisk/pulumi-aws-toolbox/commit/d942f4c67df2940bef761e3166af987993286f2d))
+
 ## [1.10.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.9.0...v1.10.0) (2025-09-17)
 
 
