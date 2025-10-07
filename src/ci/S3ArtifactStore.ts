@@ -61,6 +61,7 @@ export class S3ArtifactStore extends ComponentResource {
             }]
         }, { parent: this });
 
+        // TODO block all public access
         this.publicAccess = new aws.s3.BucketPublicAccessBlock(name, {
             bucket: this.bucket.id,
             blockPublicAcls: true,

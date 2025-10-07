@@ -54,7 +54,7 @@ the bucket should be shared by several dev stacks and must therefore already exi
 Example:
 ```typescript
 // Create a S3 bucket where the website assets are stored
-const artifactStore = new pat.build.S3ArtifactStore(`my-artifact`);
+const artifactStore = new pat.ci.S3ArtifactStore(`my-artifact`);
 
 // Create the CloudFront distribution
 new pat.website.StaticWebsite(`my-website`, {
