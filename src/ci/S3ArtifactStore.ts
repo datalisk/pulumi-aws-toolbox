@@ -10,7 +10,7 @@ import { S3Folder } from "./S3Folder";
  * EXPERIMENTAL! May change or be removed again!
  */
 export class S3ArtifactStore extends ComponentResource {
-    private bucket: aws.s3.BucketV2;
+    private bucket: aws.s3.Bucket;
     private name: string;
     private publicAccess: aws.s3.BucketPublicAccessBlock;
     private policyStatements: aws.iam.PolicyStatement[];
@@ -27,14 +27,14 @@ export class S3ArtifactStore extends ComponentResource {
         this.name = name;
         this.policyStatements = [];
 
-        this.bucket = new aws.s3.BucketV2(name, {
+        this.bucket = new aws.s3.Bucket(name, {
             forceDestroy: true,
         }, {
             parent: this,
             protect: opts?.protect,
         });
 
-        new aws.s3.BucketServerSideEncryptionConfigurationV2(name, {
+        new aws.s3.BucketServerSideEncryptionConfiguration(name, {
             bucket: this.bucket.bucket,
             rules: [{
                 applyServerSideEncryptionByDefault: {
@@ -43,14 +43,14 @@ export class S3ArtifactStore extends ComponentResource {
             }]
         }, { parent: this });
 
-        new aws.s3.BucketVersioningV2(name, {
+        new aws.s3.BucketVersioning(name, {
             bucket: this.bucket.bucket,
             versioningConfiguration: {
                 status: "Enabled",
             },
         }, { parent: this });
 
-        new aws.s3.BucketLifecycleConfigurationV2(name, {
+        new aws.s3.BucketLifecycleConfiguration(name, {
             bucket: this.bucket.bucket,
             rules: [{
                 id: "deleteOldVersions",

@@ -13,7 +13,7 @@ export class CloudfrontLogBucket extends ComponentResource {
     constructor(name: string, args: CloudfrontLogBucketArgs, opts?: ComponentResourceOptions) {
         super("pat:website:CloudfrontLogBucket", name, args, opts);
 
-        const bucket = new aws.s3.BucketV2(name, {
+        const bucket = new aws.s3.Bucket(name, {
             forceDestroy: true,
         }, {
             parent: this,
@@ -21,7 +21,7 @@ export class CloudfrontLogBucket extends ComponentResource {
             retainOnDelete: opts?.retainOnDelete,
         });
 
-        const encryption = new aws.s3.BucketServerSideEncryptionConfigurationV2(name, {
+        const encryption = new aws.s3.BucketServerSideEncryptionConfiguration(name, {
             bucket: bucket.bucket,
             rules: [{
                 applyServerSideEncryptionByDefault: {
@@ -44,7 +44,7 @@ export class CloudfrontLogBucket extends ComponentResource {
         const currentUser = aws.s3.getCanonicalUserId({}).then(currentUser => currentUser.id);
         const awslogsdeliveryUserId = "c4c1ede66af53448b93c283ce9448c4ba468c9432aa01d700d3878632f77d2d0";
 
-        const acl = new aws.s3.BucketAclV2(name, {
+        const acl = new aws.s3.BucketAcl(name, {
             bucket: bucket.id,
             accessControlPolicy: {
                 grants: [

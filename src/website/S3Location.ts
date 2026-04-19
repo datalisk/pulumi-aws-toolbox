@@ -7,11 +7,11 @@ import * as pulumi from "@pulumi/pulumi";
  */
 export class S3Location {
 
-    private bucket: aws.s3.Bucket | aws.s3.BucketV2;
+    private bucket: aws.s3.Bucket;
     private path: pulumi.Output<string>;
     private requestAccess: RequestReadAccessFunction;
 
-    constructor(bucket: aws.s3.Bucket | aws.s3.BucketV2, path: pulumi.Input<string>, requestCloudfrontReadAccess: RequestReadAccessFunction) {
+    constructor(bucket: aws.s3.Bucket, path: pulumi.Input<string>, requestCloudfrontReadAccess: RequestReadAccessFunction) {
         this.bucket = bucket;
         this.path = pulumi.output(path);
         this.requestAccess = requestCloudfrontReadAccess;
@@ -40,10 +40,10 @@ export class S3Location {
     /**
      * If CloudFront needs read access to this data, it can be requested by calling this method.
      */
-    requestCloudfrontReadAccess(distributionArn: pulumi.Input<aws.ARN>) {
+    requestCloudfrontReadAccess(distributionArn: pulumi.Input<string>) {
         this.requestAccess(distributionArn);
     }
 
 }
 
-export type RequestReadAccessFunction = (distributionArn: pulumi.Input<aws.ARN>) => void;
+export type RequestReadAccessFunction = (distributionArn: pulumi.Input<string>) => void;

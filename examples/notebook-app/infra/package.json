@@ -6,8 +6,8 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
-        "@pulumi/aws": "^6.83.3",
-        "@pulumi/pulumi": "^3.231.0",
-        "@datalisk/pulumi-aws-toolbox": "^1.11.0"
+        "@datalisk/pulumi-aws-toolbox": "link:../../..",
+        "@pulumi/aws": "^7.26.0",
+        "@pulumi/pulumi": "^3.231.0"
     }
 }

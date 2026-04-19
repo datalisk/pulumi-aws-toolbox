@@ -35,12 +35,12 @@ export class Builder {
         if (this.args.vpc != undefined) {
             new aws.iam.RolePolicyAttachment(`${this.name}-execute`, {
                 role: role,
-                policyArn: aws.iam.ManagedPolicies.AWSLambdaVPCAccessExecutionRole,
+                policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole,
             }, this.opts);
         } else {
             new aws.iam.RolePolicyAttachment(`${this.name}-execute`, {
                 role: role,
-                policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+                policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
             }, this.opts);
         }
 
@@ -90,7 +90,7 @@ export interface BaseLambdaArgs {
      * Additional managed policys for the lambda function.
      * Policies to write to the CloudWatch log group and to use the VPC (if relevant) are added automatically.
      */
-    roleManagedPolicies?: aws.ARN[];
+    roleManagedPolicies?: string[];
 
     /**
      * If specified, the Lambda will be created using the VPC's private subnets.

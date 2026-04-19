@@ -13,7 +13,7 @@ import { RequestReadAccessFunction, S3Location } from "../website";
  * - a version e.g. a Git commit hash
  */
 export class S3Artifact extends S3Location {
-    constructor(bucket: aws.s3.BucketV2, name: string, version: string, requestCloudfrontReadAccess: RequestReadAccessFunction) {
+    constructor(bucket: aws.s3.Bucket, name: string, version: string, requestCloudfrontReadAccess: RequestReadAccessFunction) {
         super(bucket, pulumi.interpolate`${name}/${version}`, requestCloudfrontReadAccess);
     }
 }
@@ -24,7 +24,7 @@ export class S3Artifact extends S3Location {
  * The bucket must already allow proper read access.
  */
 export function getS3ArtifactForBucket(
-    bucket: aws.s3.BucketV2,
+    bucket: aws.s3.Bucket,
     artifactName: string,
     version: string
 ): S3Artifact {

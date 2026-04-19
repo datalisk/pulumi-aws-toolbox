@@ -8,7 +8,7 @@ import { ComponentResource, ComponentResourceOptions } from "@pulumi/pulumi";
  */
 export class SingleAssetBucket extends ComponentResource {
     readonly assets: SingleAsset[];
-    private bucket: aws.s3.BucketV2;
+    private bucket: aws.s3.Bucket;
     private name: string;
     private publicAccess: aws.s3.BucketPublicAccessBlock;
 
@@ -17,9 +17,9 @@ export class SingleAssetBucket extends ComponentResource {
         this.name = name;
         this.assets = args.assets;
 
-        this.bucket = new aws.s3.BucketV2(name, {}, { parent: this });
+        this.bucket = new aws.s3.Bucket(name, {}, { parent: this });
 
-        const encryption = new aws.s3.BucketServerSideEncryptionConfigurationV2(name, {
+        const encryption = new aws.s3.BucketServerSideEncryptionConfiguration(name, {
             bucket: this.bucket.bucket,
             rules: [{
                 applyServerSideEncryptionByDefault: {
@@ -48,7 +48,7 @@ export class SingleAssetBucket extends ComponentResource {
         }
     }
 
-    getBucket(): aws.s3.BucketV2 {
+    getBucket(): aws.s3.Bucket {
         return this.bucket;
     }
 

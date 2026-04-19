@@ -6,7 +6,7 @@ import * as pulumi from "@pulumi/pulumi";
  */
 export interface S3Folder {
 
-    bucket: aws.s3.Bucket | aws.s3.BucketV2;
+    bucket: aws.s3.Bucket;
 
     /**
      * The path inside the bucket where the data is located.

@@ -7,7 +7,7 @@ const resourcePrefix = `notebook-${pulumi.getStack()}`;
 const config = new pulumi.Config();
 
 // Create content bucket
-const contentBucket = new aws.s3.BucketV2(`${resourcePrefix}-content`, {
+const contentBucket = new aws.s3.Bucket(`${resourcePrefix}-content`, {
     forceDestroy: true,
 });
 new aws.s3.BucketPublicAccessBlock(`${resourcePrefix}-content`, {
