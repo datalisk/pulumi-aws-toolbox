@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.11.0...v2.0.0) (2026-04-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* updated dependencies. upgraded to pulumi aws provider v7
+
+### Features
+
+* updated dependencies. upgraded to pulumi aws provider v7 ([5649aff](https://github.com/datalisk/pulumi-aws-toolbox/commit/5649aff286ee0cd7e8ae86151b96c74040a325a3))
+
 ## [1.11.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.10.0...v1.11.0) (2025-09-20)
 
 
