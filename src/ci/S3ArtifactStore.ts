@@ -6,8 +6,6 @@ import { S3Folder } from "./S3Folder";
 
 /**
  * Creates a S3 bucket where CI build artifacts can be stored.
- * 
- * EXPERIMENTAL! May change or be removed again!
  */
 export class S3ArtifactStore extends ComponentResource {
     private bucket: aws.s3.Bucket;
@@ -18,10 +16,7 @@ export class S3ArtifactStore extends ComponentResource {
 
     constructor(name: string, args?: S3ArtifactStoreArgs, opts?: ComponentResourceOptions) {
         super("pat:ci:S3ArtifactStore", name, args, {
-            ...opts,
-            aliases: [
-                { type: "pat:build:S3ArtifactStore" }
-            ]
+            ...opts
         });
 
         this.name = name;

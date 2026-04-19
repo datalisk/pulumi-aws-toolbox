@@ -1,5 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
-import { getVersion } from "../build";
+import { getVersion } from "../ci";
 import { BuildSpec } from "./BuildSpec";
 import { S3ArtifactProvider } from "./provider/S3ArtifactProvider";
 import { S3ArtifactStore } from "./S3ArtifactStore";

@@ -2,8 +2,6 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { S3Folder } from "../ci/S3Folder";
 import { CloudfrontLogBucket } from "./CloudfrontLogBucket";
-import { ImmutableResponseHeadersPolicy } from "./ImmutableResponseHeadersPolicy";
-import { S3Location } from "./S3Location";
 import { SingleAssetBucket } from "./SingleAssetBucket";
 import { ViewerRequestFunction } from "./cloudfront-function";
 import { createBucketPolicyStatement, createCloudfrontDnsRecords, defaultSecurityHeadersConfig } from "./utils";
@@ -51,8 +49,6 @@ export class StaticWebsite extends pulumi.ComponentResource {
             parent: this,
             aliases: [{ parent: pulumi.rootStackResource }], // fix for missing parent in 1.2.0
         });
-
-        const createImmutablePolicy = () => new ImmutableResponseHeadersPolicy(`${name}-immutable`, { days: 30 }, { parent: this });
 
         const s3OriginAccessControl = new aws.cloudfront.OriginAccessControl(name, {
             originAccessControlOriginType: "s3",
@@ -137,7 +133,7 @@ export class StaticWebsite extends pulumi.ComponentResource {
                     compress: true,
                     viewerProtocolPolicy: "redirect-to-https",
                     cachePolicyId: route.originCachePolicyId ?? s3CachePolicy1Minute.id,
-                    responseHeadersPolicyId: route.responseHeadersPolicyId ?? (route.immutable ? createImmutablePolicy().policyId : defaultResponseHeadersPolicy.id),
+                    responseHeadersPolicyId: route.responseHeadersPolicyId ?? defaultResponseHeadersPolicy.id,
                     functionAssociations: getFunctionAssociations(viewerResponseFuncArn, route.viewerResponseFunctionArn),
                 };
             } else if (route.type == RouteType.SingleAsset) {
@@ -252,13 +248,9 @@ export class StaticWebsite extends pulumi.ComponentResource {
 
         // request read access to S3
         args.routes.filter(r => r.type == RouteType.S3).forEach(route => {
-            if (route.s3Folder) {
-                if (route.s3Folder.addBucketPolicyStatement) {
-                    const statement = createBucketPolicyStatement(route.s3Folder.bucket.arn, this.distribution.arn, pulumi.interpolate`${route.s3Folder.path}/*`);
-                    route.s3Folder.addBucketPolicyStatement(statement);
-                }
-            } else {
-                route.s3Location!.requestCloudfrontReadAccess(this.distribution.arn);
+            if (route.s3Folder.addBucketPolicyStatement) {
+                const statement = createBucketPolicyStatement(route.s3Folder.bucket.arn, this.distribution.arn, pulumi.interpolate`${route.s3Folder.path}/*`);
+                route.s3Folder.addBucketPolicyStatement(statement);
             }
         });
 
@@ -338,7 +330,7 @@ export type CustomRoute = {
      * Caching policy. By default, caching is disabled.
      */
     readonly cachePolicyId?: pulumi.Input<string>;
-    
+
     readonly originRequestPolicyId?: pulumi.Input<string>;
 }
 
@@ -354,7 +346,7 @@ export type VpcRoute = {
      * Caching policy. By default, caching is disabled.
      */
     readonly cachePolicyId?: pulumi.Input<string>;
-    
+
     readonly originRequestPolicyId?: pulumi.Input<string>;
 }
 
@@ -396,24 +388,9 @@ export type S3Route = {
     readonly pathPattern: string;
 
     /**
-     * Either 's3Location' or 's3Folder' must be specified.
-     * @deprecated use 's3Folder'
-     */
-    readonly s3Location?: S3Location;
-
-    /**
      * Where the static assets are stored in S3.
-     * Either 's3Location' or 's3Folder' must be specified.
      */
-    readonly s3Folder?: S3Folder;
-
-    /**
-     * The resources can be treated as immutable, meaning, they can be cached forever.
-     * Is false by default.
-     * 
-     * @deprecated create a ImmutableResponseHeadersPolicy and use 'responseHeadersPolicyId'. will be removed in the next major release.
-     */
-    readonly immutable?: boolean;
+    readonly s3Folder: S3Folder;
 
     /**
      * Optionally, specify your own viewer request function (instead of using our default).
@@ -486,18 +463,8 @@ function getFunctionAssociations(viewerRequestFuncArn: pulumi.Input<string> | un
 }
 
 function getS3Folder(s3Route: S3Route): S3Folder {
-    if (s3Route.s3Folder && s3Route.s3Location) throw new Error(`Either 's3Location' or 's3Folder' must be specified, not both.`);
-
     if (s3Route.s3Folder !== undefined) {
         return s3Route.s3Folder;
-    } else if (s3Route.s3Location !== undefined) {
-        return {
-            bucket: s3Route.s3Location.getBucket(),
-            path: s3Route.s3Location.getPath(),
-            addBucketPolicyStatement: () => {
-                throw new Error(`Unsupported on legacy S3Location object`);
-            },
-        }
     } else {
         throw new Error(`Either 's3Location' or 's3Folder' must be specified.`);
     }

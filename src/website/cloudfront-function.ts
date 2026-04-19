@@ -78,13 +78,6 @@ export class ViewerRequestFunction extends CloudfrontChainedFunction {
     }
 
     /**
-     * @deprecated replace with rewriteWebpagePath('SUB_DIR')
-     */
-    withIndexRewrite() {
-        return this.rewriteWebpagePath('SUB_DIR');
-    }
-
-    /**
      * Rewrites the requested path to serve an actual HTML file.
      * 
      * Strategy 'FILE':
