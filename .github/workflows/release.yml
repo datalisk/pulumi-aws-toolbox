@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v5
+        with:
+          version: 10
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.x'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: pnpm install
+      - run: pnpm test
+      - run: pnpm run build
+
+      - name: Bump version and changelog
+        id: bump
+        uses: TriPSs/conventional-changelog-action@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          preset: 'conventionalcommits'
+          # release-count: 0 # changelog should include all releases
+          skip-tag: true
+          version-file: package.json,pnpm-lock.yaml
+
+      - name: Publish release tag
+        if: ${{ steps.bump.outputs.skipped == 'false' }}
+        run: |
+          git checkout -b "release/$TAG"
+          git add -f dist
+          git commit -m "chore: add dist for $TAG"
+          git tag "$TAG"
+          git push origin "$TAG"
+        env:
+          TAG: v${{ steps.bump.outputs.version }}

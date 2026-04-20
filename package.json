@@ -1,14 +1,14 @@
 {
   "name": "@datalisk/pulumi-aws-toolbox",
   "repository": {
-    "url": "https://github.com/datalisk/pulumi-aws-toolbox"
+    "url": "git+https://github.com/datalisk/pulumi-aws-toolbox.git"
   },
   "bin": {
-    "ec2-postgresql-connect": "./bin/ec2-postgresql-connect.sh",
-    "pulumi-aws-login": "./bin/pulumi-aws-login.sh"
+    "ec2-postgresql-connect": "bin/ec2-postgresql-connect.sh",
+    "pulumi-aws-login": "bin/pulumi-aws-login.sh"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "test": "jest"
   },
   "dependencies": {
