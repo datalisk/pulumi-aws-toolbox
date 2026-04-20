@@ -37,7 +37,6 @@ jobs:
           preset: 'conventionalcommits'
           # release-count: 0 # changelog should include all releases
           skip-tag: true
-          version-file: package.json,pnpm-lock.yaml
 
       - name: Publish release tag
         if: ${{ steps.bump.outputs.skipped == 'false' }}
