@@ -1,0 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const pulumi_1 = require("../util/pulumi");
+const Ec2PostgresqlDatabase_1 = require("./Ec2PostgresqlDatabase");
+test('createInitScript', async () => {
+    const script = await (0, pulumi_1.resolveOutput)((0, Ec2PostgresqlDatabase_1.createInitScript)("/dev/xvdf", "12345678"));
+    expect(script).toContain(`ALTER USER postgres PASSWORD '12345678'`);
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRWMyUG9zdGdyZXNxbERhdGFiYXNlLnNwZWMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvZGF0YWJhc2UvRWMyUG9zdGdyZXNxbERhdGFiYXNlLnNwZWMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSwyQ0FBK0M7QUFDL0MsbUVBQTJEO0FBRTNELElBQUksQ0FBQyxrQkFBa0IsRUFBRSxLQUFLLElBQUksRUFBRTtJQUNoQyxNQUFNLE1BQU0sR0FBRyxNQUFNLElBQUEsc0JBQWEsRUFBQyxJQUFBLHdDQUFnQixFQUFDLFdBQVcsRUFBRSxVQUFVLENBQUMsQ0FBQyxDQUFDO0lBQzlFLE1BQU0sQ0FBQyxNQUFNLENBQUMsQ0FBQyxTQUFTLENBQUMseUNBQXlDLENBQUMsQ0FBQztBQUN4RSxDQUFDLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHJlc29sdmVPdXRwdXQgfSBmcm9tIFwiLi4vdXRpbC9wdWx1bWlcIjtcbmltcG9ydCB7IGNyZWF0ZUluaXRTY3JpcHQgfSBmcm9tIFwiLi9FYzJQb3N0Z3Jlc3FsRGF0YWJhc2VcIjtcblxudGVzdCgnY3JlYXRlSW5pdFNjcmlwdCcsIGFzeW5jICgpID0+IHtcbiAgICBjb25zdCBzY3JpcHQgPSBhd2FpdCByZXNvbHZlT3V0cHV0KGNyZWF0ZUluaXRTY3JpcHQoXCIvZGV2L3h2ZGZcIiwgXCIxMjM0NTY3OFwiKSk7XG4gICAgZXhwZWN0KHNjcmlwdCkudG9Db250YWluKGBBTFRFUiBVU0VSIHBvc3RncmVzIFBBU1NXT1JEICcxMjM0NTY3OCdgKTtcbn0pO1xuIl19
