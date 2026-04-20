@@ -1,4 +1,4 @@
-## [2.0.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.11.0...v2.0.0) (2026-04-20)
+## [3.0.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v1.11.0...v3.0.0) (2026-04-20)
 
 
 ### ⚠ BREAKING CHANGES
