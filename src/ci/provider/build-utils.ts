@@ -1,9 +1,10 @@
 import { spawn } from "child_process";
 
-export async function executeCommand(workingDir: string, command: string) {
+export async function executeCommand(workingDir: string, command: string, environmentVariables: { [key: string]: string; }) {
     return new Promise((resolve, reject) => {
         const childProcess = spawn(command, {
             cwd: workingDir,
+            env: environmentVariables,
             shell: true,
         });
 

@@ -1,5 +1,4 @@
 import * as pulumi from "@pulumi/pulumi";
-import { BuildSpec } from '../BuildSpec.js';
 import { executeCommand } from './build-utils.js';
 import { isFolderPresent, s3PutFolder } from "./deploy-utils.js";
 
@@ -41,7 +40,8 @@ export class S3ArtifactProvider implements pulumi.dynamic.ResourceProvider<Input
     private async buildAndDeploy(args: Inputs) {
         for (const cmd of args.buildSpec.commands) {
             console.log(`Executing ${cmd}`);
-            await executeCommand(args.buildSpec.sourceDir, cmd);
+            const envs = args.buildSpec.environmentVariables ?? {};
+            await executeCommand(args.buildSpec.sourceDir, cmd, envs);
         }
 
         console.log(`Uploading artifact to s3://${args.bucketName}/${args.bucketPath}`);
@@ -53,8 +53,24 @@ export class S3ArtifactProvider implements pulumi.dynamic.ResourceProvider<Input
 interface Inputs {
     bucketName: string;
     bucketPath: string;
-    buildSpec: BuildSpec;
+    buildSpec: ProviderBuildSpec;
 }
+
+interface ProviderBuildSpec {
+    readonly sourceDir: string;
+
+    readonly commands: string[];
+
+    readonly environmentVariables?: {
+        [key: string]: string;
+    };
+
+    /**
+     * The path of the directory that will be used for the artifact's content.
+     */
+    readonly outputDir: string;
+}
+
 
 interface Outputs {
 }

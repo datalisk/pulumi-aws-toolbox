@@ -12,8 +12,6 @@ import { S3Folder } from "./S3Folder";
  * The artifact version is the Git commit hash when the source dir was last changed.
  * The artifact will be built and deployed when the artifact version is not yet present in the S3ArtifactStore.
  * Therfore, only new commits that change the source dir will trigger a rebuild.
- *  
- * EXPERIMENTAL! This API may change!
  * 
  * @param name logical resource name
  * @param args 
