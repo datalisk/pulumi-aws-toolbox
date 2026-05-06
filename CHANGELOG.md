@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v2.0.1...v2.1.0) (2026-05-06)
+
+
+### Features
+
+* ci S3ArtifactBuild supporting environment variables ([b1f2349](https://github.com/datalisk/pulumi-aws-toolbox/commit/b1f23495870c270bbf8b97628409ef05aaa70591))
+
 ## [2.0.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v2.0.0...v2.0.1) (2026-05-06)
 
 

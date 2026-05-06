@@ -1,5 +1,4 @@
 import * as pulumi from "@pulumi/pulumi";
-import { BuildSpec } from '../BuildSpec.js';
 export declare class S3ArtifactProvider implements pulumi.dynamic.ResourceProvider<Inputs, Outputs> {
     private artifactExists;
     check(_: Inputs, news: Inputs): Promise<{}>;
@@ -13,7 +12,18 @@ export declare class S3ArtifactProvider implements pulumi.dynamic.ResourceProvid
 interface Inputs {
     bucketName: string;
     bucketPath: string;
-    buildSpec: BuildSpec;
+    buildSpec: ProviderBuildSpec;
+}
+interface ProviderBuildSpec {
+    readonly sourceDir: string;
+    readonly commands: string[];
+    readonly environmentVariables?: {
+        [key: string]: string;
+    };
+    /**
+     * The path of the directory that will be used for the artifact's content.
+     */
+    readonly outputDir: string;
 }
 interface Outputs {
 }
