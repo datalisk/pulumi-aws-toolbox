@@ -14,8 +14,9 @@ The [notebook app](https://notebook.datalisk.com) demonstrates the core componen
 # Setup
 Install with
 
-    pnpm add github:datalisk/pulumi-aws-toolbox#v2.0.1
+    pnpm add github:datalisk/pulumi-aws-toolbox#v3.0.0
 
+Get the latest version from the changelog.
 Import it into your code with
 
 ```typescript
@@ -42,7 +43,7 @@ The following things happen under the hood:
 
 
 ### S3 Integration
-S3 is ideal to serve the content for a static website. To facilitate this the StaticWebsite component does the following:
+S3 is ideal to serve the content for a static website. To facilitate this the Website component does the following:
 
 - Automatically handles URL rewrites. When the user requests '/' we return '/index.html' and if requesting '/about' we will return the /about.html file from S3 (can be configured). To generate correct assets, your frontend framework must be configured correctly.
   - Svelte: use trailingSlash = 'always' (the default)
@@ -57,12 +58,11 @@ Example:
 const artifactStore = new pat.ci.S3ArtifactStore(`my-artifact`);
 
 // Create the CloudFront distribution
-new pat.website.StaticWebsite(`my-website`, {
-    acmCertificateArn_usEast1: "arn:aws:acm:us-east-1:111111111111:certificate/xxxxxxxxx",
-    hostedZoneId: "Z11111111111111111111",
+new pat.website.Website(`my-website`, {
+    hostedZone: ...,
     routes: [{
         type: RouteType.S3,
-        pathPattern: "/",
+        pathPattern: "/*",
         s3Folder: artifactStore.getArtifact("website", "1.0"),
     }],
 });

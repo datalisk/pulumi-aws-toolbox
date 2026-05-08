@@ -17,7 +17,7 @@ This is a Pulumi component library (`@datalisk/pulumi-aws-toolbox`) for deployin
 ### Module Structure
 
 The library exports namespaced modules via `src/index.ts`:
-- `pat.website` - StaticWebsite with CloudFront + S3, Lambda integration, CloudFront functions
+- `pat.website` - Website with CloudFront + S3, Lambda integration, CloudFront functions
 - `pat.vpc` - IPv6-focused VPC with public/private subnets, Jumphost, security groups
 - `pat.ci` - S3ArtifactStore for build artifacts, S3Folder abstraction
 - `pat.database` - Ec2PostgresqlDatabase for self-hosted PostgreSQL on EC2
@@ -27,7 +27,7 @@ The library exports namespaced modules via `src/index.ts`:
 
 ### Key Design Patterns
 
-**StaticWebsite routing**: Routes are defined with a `RouteType` enum (S3, Lambda, SingleAsset, Custom) that determines how CloudFront forwards requests.
+**Website routing**: Routes are defined with a `RouteType` enum (S3, Lambda, SingleAsset, Custom) that determines how CloudFront forwards requests.
 
 **S3ArtifactStore + S3Folder**: Build artifacts are stored in S3 with a folder abstraction (`bucket/artifact-name/version`). The artifact store creates the bucket; `getArtifact()` returns an S3Folder reference for use in website routes.
 
