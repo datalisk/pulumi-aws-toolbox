@@ -15,6 +15,24 @@
 
 * removed StaticWebsite component
 
+
+### Migration
+The Website component is a drop-in replacement for the removed StaticWebsite component.
+
+- rename to Website and set
+  aliases: [{ type: "pat:website:StaticWebsite" }]
+  for migration.
+- The hosted zone must be given as hostedZone, instead of hostedZoneId
+- The "acmCertificateArn_usEast1" option has been removed - the component will create it's own certificate.
+- Caching policy: No origin caching is used by default. Previously, S3 routes where cached for 1 minute.
+- The default route must now be declared with pathPattern '/*' instead of '/'
+- S3 routes:
+  - instead of viewerRequestFunctionArn, use getViewerRequestFunctionArn
+  - instead of originCachePolicyId use cachePolicyId
+- Lambda routes
+  - removed useOriginAccessControl as OAC is currently inpractible.
+
+
 # [2.1.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v2.0.1...v2.1.0) (2026-05-06)
 
 
@@ -22,7 +40,7 @@
 
 * ci S3ArtifactBuild supporting environment variables ([b1f2349](https://github.com/datalisk/pulumi-aws-toolbox/commit/b1f23495870c270bbf8b97628409ef05aaa70591))
 
-## [2.0.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v2.0.0...v2.0.1) (2026-05-06)
+# [2.0.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v2.0.0...v2.0.1) (2026-05-06)
 
 
 ### Bug Fixes
@@ -30,7 +48,7 @@
 * release publishing with semantic-release ([9534ed6](https://github.com/datalisk/pulumi-aws-toolbox/commit/9534ed64f08ae60fe95cf99bedf9efaefeef419a))
 
 
-## [2.0.0]
+# [2.0.0]() (2026-04-20)
 
 * updated dependencies. upgraded to pulumi aws provider v7
 * removed deprecated components & options
