@@ -55,9 +55,9 @@ const frontendArtifact = pat.ci.createS3ArtifactBuild(`${resourcePrefix}-fronten
 });
 
 // Creating the Cloudfront Distribution
-const website = new pat.website.StaticWebsite(`${resourcePrefix}-website`, {
-    acmCertificateArn_usEast1: config.require("acmCertificateArn_usEast1"),
-    hostedZoneId: config.require("hostedZoneId"),
+const hostedZone = aws.route53.Zone.get(`${resourcePrefix}-zone`, config.require("hostedZoneId"));
+const website = new pat.website.Website(`${resourcePrefix}-website`, {
+    hostedZone,
     subDomain: pulumi.getStack() == "prod" ? "notebook" : resourcePrefix,
     // basicAuth: { username: "development", password: "bigsecret" }, // enable for a non-public website
     routes: [{
@@ -69,21 +69,25 @@ const website = new pat.website.StaticWebsite(`${resourcePrefix}-website`, {
         // serve download notebook files for direct download
         type: RouteType.S3,
         pathPattern: '/content/*',
-        s3Folder: { bucket: contentBucket, path: '' },
-        originCachePolicyId: aws.cloudfront.getCachePolicyOutput({ name: "Managed-CachingDisabled" }).apply(policy => policy.id!!),
+        s3Folder: { bucket: contentBucket, path: '' }
     }, {
         // rewrite and serve notebook UI (i.e. a request to /n/abc123 is served with /n/0.html)
         type: RouteType.S3,
         pathPattern: "/n/*",
         s3Folder: frontendArtifact,
-        viewerRequestFunctionArn: new pat.website.ViewerRequestFunction(`${resourcePrefix}-notebook-rewrite`)
+        getViewerRequestFunctionArn: (template) => template
             .rewritePathElement(1, "0.html")
             .create().arn
+        ,
     }, {
         // default: serve static frontend assets
         type: RouteType.S3,
-        pathPattern: "/",
+        pathPattern: "/*",
         s3Folder: frontendArtifact,
+    }],
+}, {
+    aliases: [{
+        type: "pat:website:StaticWebsite",
     }],
 });
 

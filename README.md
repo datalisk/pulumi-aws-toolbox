@@ -25,7 +25,7 @@ import * as pat from "@datalisk/pulumi-aws-toolbox";
 # Components
 
 ## Website hosting
-The [StaticWebsite](src/website/StaticWebsite.ts) component creates a CloudFront distribution and a number of supporting resources to host a mostly static website. It's an opinionated component that tries to solve the common cases of website hosting.
+The [Website](src/website/Website.ts) component creates a CloudFront distribution and a number of supporting resources to host a website. It's an opinionated component that tries to solve the common cases of website hosting.
 
 Resources can be integrated from these sources (see "routes" argument):
  - S3: for static assets

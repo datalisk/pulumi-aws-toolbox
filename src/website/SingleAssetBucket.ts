@@ -30,8 +30,10 @@ export class SingleAssetBucket extends ComponentResource {
 
         this.publicAccess = new aws.s3.BucketPublicAccessBlock(name, {
             bucket: this.bucket.id,
+            blockPublicPolicy: true,
             blockPublicAcls: true,
             ignorePublicAcls: true,
+            restrictPublicBuckets: true,
         }, { parent: this });
 
         for (const asset of args.assets) {
