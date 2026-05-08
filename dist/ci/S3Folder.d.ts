@@ -16,7 +16,7 @@ export interface S3Folder {
      *
      * Example:
      * CloudFront will need read access to a S3 folder to deliver content.
-     * The StaticWebsite component will call this function once the distribution ARN is known,
+     * The Website component will call this function once the distribution ARN is known,
      * so that bucket policies can be set up by the S3ArtifactStore.
      */
     addBucketPolicyStatement?(statement: aws.iam.PolicyStatement): void;

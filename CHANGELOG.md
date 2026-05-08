@@ -1,3 +1,20 @@
+# [3.0.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v2.1.0...v3.0.0) (2026-05-08)
+
+
+### Bug Fixes
+
+* ci.S3ArtifactStore removed public bucket access ([5fca02e](https://github.com/datalisk/pulumi-aws-toolbox/commit/5fca02eeb12ae809eb04831534ee07e70ea659b3))
+
+
+### Features
+
+* added Website component ([cd58661](https://github.com/datalisk/pulumi-aws-toolbox/commit/cd586618cdc346212c30a4bf1f7a874ceff7fccc))
+
+
+### BREAKING CHANGES
+
+* removed StaticWebsite component
+
 # [2.1.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v2.0.1...v2.1.0) (2026-05-06)
 
 
