@@ -9,16 +9,20 @@ import { S3Folder } from "./S3Folder";
 /**
  * Registers a CI build for the given artifact.
  * 
- * The artifact version is the Git commit hash when the source dir was last changed.
+ * The artifact version is composed of
+ * - the Git commit hash when the source dir was last changed
+ * - and a hash of the build spec (commands, env vars etc).
+ * 
  * The artifact will be built and deployed when the artifact version is not yet present in the S3ArtifactStore.
- * Therfore, only new commits that change the source dir will trigger a rebuild.
  * 
  * @param name logical resource name
  * @param args 
  * @returns a S3Folder instance
  */
 export function createS3ArtifactBuild(name: string, args: CreateArtifactArgs): S3Folder {
-    const artifactVersion = pulumi.output(getVersion(args.buildSpec.sourceDir));
+    const sourceCodeVersion = pulumi.output(getVersion(args.buildSpec.sourceDir));
+    const artifactVersion = pulumi.interpolate`${sourceCodeVersion}-${getBuildSpecHash(args.buildSpec)}`;
+
     const artifact = args.artifactStore.getArtifact(args.artifactName, artifactVersion);
 
     const build = new S3ArtifactBuild(name, {
@@ -51,4 +55,11 @@ interface S3ArtifactBuildArgs {
     bucketName: pulumi.Input<string>;
     bucketPath: pulumi.Input<string>;
     buildSpec: BuildSpec;
+}
+
+function getBuildSpecHash(buildSpec: BuildSpec): string {
+    const json = JSON.stringify(buildSpec);
+    const hash = require('crypto').createHash('sha256');
+    hash.update(json);
+    return hash.digest('hex').substring(0, 4);
 }
