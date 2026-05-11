@@ -1,3 +1,11 @@
+## [3.0.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v3.0.0...v3.0.1) (2026-05-11)
+
+
+### Bug Fixes
+
+* ci S3ArtifactBuild including build spec hash in artifact version ([994ec5b](https://github.com/datalisk/pulumi-aws-toolbox/commit/994ec5ba6e7712634c329c1b8b3720f344b58ea4))
+* ci S3ArtifactBuild providing PATH env var as default ([fdcd115](https://github.com/datalisk/pulumi-aws-toolbox/commit/fdcd11515ccf55102057cc1acab564a8174f97c3))
+
 # [3.0.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v2.1.0...v3.0.0) (2026-05-08)
 
 

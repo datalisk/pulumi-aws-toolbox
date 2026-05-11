@@ -5,9 +5,11 @@ import { S3Folder } from "./S3Folder";
 /**
  * Registers a CI build for the given artifact.
  *
- * The artifact version is the Git commit hash when the source dir was last changed.
+ * The artifact version is composed of
+ * - the Git commit hash when the source dir was last changed
+ * - and a hash of the build spec (commands, env vars etc).
+ *
  * The artifact will be built and deployed when the artifact version is not yet present in the S3ArtifactStore.
- * Therfore, only new commits that change the source dir will trigger a rebuild.
  *
  * @param name logical resource name
  * @param args
