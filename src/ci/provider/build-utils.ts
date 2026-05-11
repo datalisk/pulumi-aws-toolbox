@@ -4,7 +4,10 @@ export async function executeCommand(workingDir: string, command: string, enviro
     return new Promise((resolve, reject) => {
         const childProcess = spawn(command, {
             cwd: workingDir,
-            env: environmentVariables,
+            env: {
+                PATH: process.env.PATH,
+                ...environmentVariables
+            },
             shell: true,
         });
 
