@@ -23,7 +23,7 @@ A live demo is available at [https://notebook.datalisk.com](https://notebook.dat
 
 Before deploying the app, ensure you have the following installed and configured:
 
-- **Node.js:** Version 18 or higher.
+- **Node.js:** Version 24 or higher.
 - **pnpm:** Install via:
   ```bash
   npm install -g pnpm
@@ -51,14 +51,10 @@ Follow these steps to build and deploy Notebook to your AWS account:
    pulumi stack init
    ```
 
-4. **Configure Required AWS Resources:**
-   Notebook requires:
-   - An existing AWS Route53 hosted zone (for DNS management).
-   - An AWS ACM certificate in the us-east-1 region (for HTTPS).
-   
-   Create these resources manually if needed, then configure them in your Pulumi stack:
+4. **Create a hosted zone:**
+   Notebook requires an existing AWS Route53 hosted zone (for DNS).
+   Configure it for your Pulumi stack with:
    ```bash
-   pulumi config set acmCertificateArn_usEast1 "arn:aws:acm:us-east-1:xxx:certificate/xxx"
    pulumi config set hostedZoneId "AAAABBBB111122"
    ```
 

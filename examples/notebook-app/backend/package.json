@@ -1,0 +1,20 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf out dist",
+    "build": "tsc",
+    "build:dist": "npm run clean && npm run build && cp package.json out/package.json && mkdir dist && cd out && zip -r ../dist/function.zip ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.28.0",
+  "devDependencies": {
+    "@types/node": "^24",
+    "typescript": "^6.0.3"
+  }
+}

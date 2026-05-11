@@ -6,6 +6,22 @@ import * as pulumi from "@pulumi/pulumi";
 const resourcePrefix = `notebook-${pulumi.getStack()}`;
 const config = new pulumi.Config();
 
+const artifactStore = new pat.ci.S3ArtifactStore(`${resourcePrefix}-artifact`);
+
+// Build and deploy the backend artifact
+const backendArtifact = pat.ci.createS3ArtifactBuild(`${resourcePrefix}-backend`, {
+    artifactStore,
+    artifactName: "backend",
+    buildSpec: {
+        sourceDir: "../backend",
+        commands: [
+            "pnpm install",
+            "pnpm run build:dist",
+        ],
+        outputDir: "../backend/dist",
+    },
+});
+
 // Create content bucket
 const contentBucket = new aws.s3.Bucket(`${resourcePrefix}-content`, {
     forceDestroy: true,
@@ -13,7 +29,7 @@ const contentBucket = new aws.s3.Bucket(`${resourcePrefix}-content`, {
 
 // Create backend
 const backendLambda = new pat.lambda.SimpleNodeLambda(`${resourcePrefix}-backend`, {
-    codeDir: `${__dirname}/../backend`,
+    codeS3Folder: backendArtifact,
     roleInlinePolicies: [{
         name: "S3",
         policy: {
@@ -34,8 +50,7 @@ const backendFunctionUrl = new aws.lambda.FunctionUrl(`${resourcePrefix}-backend
     authorizationType: "NONE",
 });
 
-// Build and deploy the frontend artifact to S3
-const artifactStore = new pat.ci.S3ArtifactStore(`${resourcePrefix}-artifact`);
+// Build and deploy the frontend artifact
 const frontendArtifact = pat.ci.createS3ArtifactBuild(`${resourcePrefix}-frontend`, {
     artifactStore,
     artifactName: "frontend",
@@ -79,10 +94,6 @@ const website = new pat.website.Website(`${resourcePrefix}-website`, {
         type: RouteType.S3,
         pathPattern: "/*",
         s3Folder: frontendArtifact,
-    }],
-}, {
-    aliases: [{
-        type: "pat:website:StaticWebsite",
     }],
 });
 

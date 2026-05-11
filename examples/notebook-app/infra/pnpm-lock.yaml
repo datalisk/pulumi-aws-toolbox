@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@datalisk/pulumi-aws-toolbox':
-        specifier: github:datalisk/pulumi-aws-toolbox#v3.0.1
-        version: https://codeload.github.com/datalisk/pulumi-aws-toolbox/tar.gz/4b27ad74eeeb3b003dc140a9295ce9e2dfceb930(typescript@5.6.3)
+        specifier: github:datalisk/pulumi-aws-toolbox#v3.1.0
+        version: https://codeload.github.com/datalisk/pulumi-aws-toolbox/tar.gz/6ca0a3e8f4dbd182df968d5e171d6ae50315c768(typescript@5.6.3)
       '@pulumi/aws':
         specifier: ^7.26.0
         version: 7.26.0(typescript@5.6.3)
@@ -186,9 +186,9 @@ packages:
     resolution: {integrity: sha512-iY8yvjE0y651BixKNPgmv1WrQc+GZ142sb0z4gYnChDDY2YqI4P/jsSopBWrKfAt7LOJAkOXt7rC/hms+WclQQ==}
     engines: {node: '>=18.0.0'}
 
-  '@datalisk/pulumi-aws-toolbox@https://codeload.github.com/datalisk/pulumi-aws-toolbox/tar.gz/4b27ad74eeeb3b003dc140a9295ce9e2dfceb930':
-    resolution: {tarball: https://codeload.github.com/datalisk/pulumi-aws-toolbox/tar.gz/4b27ad74eeeb3b003dc140a9295ce9e2dfceb930}
-    version: 3.0.1
+  '@datalisk/pulumi-aws-toolbox@https://codeload.github.com/datalisk/pulumi-aws-toolbox/tar.gz/6ca0a3e8f4dbd182df968d5e171d6ae50315c768':
+    resolution: {tarball: https://codeload.github.com/datalisk/pulumi-aws-toolbox/tar.gz/6ca0a3e8f4dbd182df968d5e171d6ae50315c768}
+    version: 3.1.0
     hasBin: true
 
   '@gar/promise-retry@1.0.3':
@@ -1801,7 +1801,7 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.2.4': {}
 
-  '@datalisk/pulumi-aws-toolbox@https://codeload.github.com/datalisk/pulumi-aws-toolbox/tar.gz/4b27ad74eeeb3b003dc140a9295ce9e2dfceb930(typescript@5.6.3)':
+  '@datalisk/pulumi-aws-toolbox@https://codeload.github.com/datalisk/pulumi-aws-toolbox/tar.gz/6ca0a3e8f4dbd182df968d5e171d6ae50315c768(typescript@5.6.3)':
     dependencies:
       '@aws-sdk/client-s3': 3.1045.0
       '@pulumi/aws': 7.26.0(typescript@5.6.3)

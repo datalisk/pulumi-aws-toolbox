@@ -1,9 +1,9 @@
 import * as s3 from '@aws-sdk/client-s3';
 
 const s3Client = new s3.S3Client();
-const contentBucket = process.env.CONTENT_BUCKET;
+const contentBucket = process.env['CONTENT_BUCKET'];
 
-export const handler = async (event) => {
+export const handler = async (event: any) => {
     console.log("EVENT", JSON.stringify(event, null, 2));
 
     if (event.requestContext.http.method == "POST" && event.requestContext.http.path.startsWith('/api/content/')) {

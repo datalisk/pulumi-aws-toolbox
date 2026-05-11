@@ -14,7 +14,7 @@ The [notebook app](https://notebook.datalisk.com) demonstrates the core componen
 # Setup
 Install with
 
-    pnpm add github:datalisk/pulumi-aws-toolbox#v3.0.0
+    pnpm add github:datalisk/pulumi-aws-toolbox#v3.x.x
 
 Get the latest version from the changelog.
 Import it into your code with
