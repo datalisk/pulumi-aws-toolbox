@@ -7,7 +7,7 @@ export class S3ArtifactProvider implements pulumi.dynamic.ResourceProvider<Input
 
     async check(_: Inputs, news: Inputs) {
         this.artifactExists = await isFolderPresent(news.bucketName, news.bucketPath);
-        console.log(`Artifact ${this.artifactExists ? 'already exists' : 'does not exist'} at s3://${news.bucketName}/${news.bucketPath}`);
+        console.log(`${this.describe(news)}: ${this.artifactExists ? 'Already exists' : 'Does not exist'}`);
         return {};
     }
 
@@ -30,7 +30,7 @@ export class S3ArtifactProvider implements pulumi.dynamic.ResourceProvider<Input
             await this.buildAndDeploy(args);
         } else {
             // another dev stack may have already built/deployed it
-            console.log(`No build required. Using existing artifact.`)
+            console.log(`${this.describe(args)}: Using existing artifact.`)
         }
 
         const outs: Outputs = {};
@@ -39,13 +39,18 @@ export class S3ArtifactProvider implements pulumi.dynamic.ResourceProvider<Input
 
     private async buildAndDeploy(args: Inputs) {
         for (const cmd of args.buildSpec.commands) {
-            console.log(`Executing ${cmd}`);
+            console.log(`${this.describe(args)}: Executing ${cmd}`);
             const envs = args.buildSpec.environmentVariables ?? {};
             await executeCommand(args.buildSpec.sourceDir, cmd, envs);
         }
 
-        console.log(`Uploading artifact to s3://${args.bucketName}/${args.bucketPath}`);
+        console.log(`${this.describe(args)}: Uploading...`);
         await s3PutFolder(args.buildSpec.outputDir, args.bucketName, args.bucketPath);
+        console.log(`${this.describe(args)}: Uploaded`);
+    }
+
+    private describe(args: Inputs): string {
+        return `Artifact ${args.bucketPath}`;
     }
 
 }
