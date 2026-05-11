@@ -8,6 +8,7 @@ export declare class S3ArtifactProvider implements pulumi.dynamic.ResourceProvid
         outs: Outputs;
     }>;
     private buildAndDeploy;
+    private describe;
 }
 interface Inputs {
     bucketName: string;

@@ -1,6 +1,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { ComponentResourceOptions } from "@pulumi/pulumi";
+import { S3Folder } from "../ci";
 import { BaseLambdaArgs } from "./Builder";
 /**
  * Creates a Nodejs AWS Lambda with useful defaults for small & simple tasks.
@@ -8,13 +9,23 @@ import { BaseLambdaArgs } from "./Builder";
 export declare class SimpleNodeLambda extends pulumi.ComponentResource {
     readonly function: aws.lambda.Function;
     constructor(name: string, args: SimpleNodeLambdaArgs, opts?: ComponentResourceOptions, type?: string);
+    private getCodeArgs;
 }
 export interface SimpleNodeLambdaArgs extends BaseLambdaArgs {
     /**
-     * A directory with the JS source code to deploy.
-     * It must contain a index.js/index.mjs file with a handler function.
+     * A local directory with the JS source code to deploy.
      */
-    codeDir: string;
+    codeDir?: string;
+    /**
+     * A S3 folder containing a function.zip file to deploy as the Lambda code.
+     * Example: { bucket: myBucket, path: "backend/abcd1234" }
+     */
+    codeS3Folder?: S3Folder;
+    /**
+     * The handler name.
+     * Defaults to "index.handler", which means the function will look for a index.js or index.mjs file with an exported handler function.
+     */
+    handler?: string;
     /**
      * Map of environment variables for the function.
      */

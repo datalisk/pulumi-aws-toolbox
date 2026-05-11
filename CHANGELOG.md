@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v3.0.1...v3.1.0) (2026-05-11)
+
+
+### Features
+
+* added SimpleNodeLambda codeS3Folder param, allowing for typescript builds ([788647a](https://github.com/datalisk/pulumi-aws-toolbox/commit/788647a543a14e13c979142263d8cb8f906353f7))
+
 ## [3.0.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v3.0.0...v3.0.1) (2026-05-11)
 
 
