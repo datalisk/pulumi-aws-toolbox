@@ -10,11 +10,6 @@ const config = new pulumi.Config();
 const contentBucket = new aws.s3.Bucket(`${resourcePrefix}-content`, {
     forceDestroy: true,
 });
-new aws.s3.BucketPublicAccessBlock(`${resourcePrefix}-content`, {
-    bucket: contentBucket.bucket,
-    blockPublicAcls: true,
-    ignorePublicAcls: true,
-});
 
 // Create backend
 const backendLambda = new pat.lambda.SimpleNodeLambda(`${resourcePrefix}-backend`, {
