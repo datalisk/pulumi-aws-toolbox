@@ -23,6 +23,7 @@ export declare class Vpc extends ComponentResource implements IVpc {
     readonly privateSubnetIds: Output<string>[];
     readonly publicSubnetIds: Output<string>[];
     readonly vpcId: Output<string>;
+    readonly eicSecurityGroupId: Output<string>;
     private readonly eicSecurityGroup;
     private readonly subnets;
     private readonly vpc;
@@ -31,9 +32,10 @@ export declare class Vpc extends ComponentResource implements IVpc {
     private createPublicSubnet;
     private createPrivateSubnet;
     /**
-     * Adds a rule to the given StdSecurityGroup that allows traffic from the EIC.
+     * Adds a rule to the given security group that allows traffic from the EIC.
+     * @deprecated to be removed
      */
-    grantEicIngressFor(name: string, securityGroupId: pulumi.Output<string>): void;
+    grantEicIngressFor(name: string, securityGroupId: pulumi.Input<string>): void;
     private computeSubnetIpv4Cidr;
     private createInstanceConnectEndpoint;
 }

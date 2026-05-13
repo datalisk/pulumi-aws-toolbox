@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v3.1.0...v3.1.1) (2026-05-13)
+
+
+### Bug Fixes
+
+* Jumphost creation failing with infinit loop in current pulumi ([e8e3b8c](https://github.com/datalisk/pulumi-aws-toolbox/commit/e8e3b8ca5e10e683ddd31cff7395f446ba4ccf28))
+
 # [3.1.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v3.0.1...v3.1.0) (2026-05-11)
 
 
