@@ -111,7 +111,7 @@ export class S3ArtifactStore extends ComponentResource {
         }
     }
 
-    getBucketName() {
+    getBucketName(): pulumi.Output<string> {
         return this.bucket.bucket;
     }
 }

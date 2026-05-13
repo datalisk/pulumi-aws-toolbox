@@ -27,6 +27,7 @@ export class Vpc extends ComponentResource implements IVpc {
     readonly privateSubnetIds: Output<string>[];
     readonly publicSubnetIds: Output<string>[];
     readonly vpcId: Output<string>;
+    readonly eicSecurityGroupId: Output<string>;
 
     private readonly eicSecurityGroup: aws.ec2.SecurityGroup;
     private readonly subnets: aws.ec2.Subnet[];
@@ -88,6 +89,7 @@ export class Vpc extends ComponentResource implements IVpc {
 
         const eic = this.createInstanceConnectEndpoint(this.privateSubnetIds[0]);
         this.eicSecurityGroup = eic.sg;
+        this.eicSecurityGroupId = eic.sg.id;
     }
 
     getSubnet(subnetId: pulumi.Input<string>) {
@@ -186,6 +188,7 @@ export class Vpc extends ComponentResource implements IVpc {
 
     /**
      * Adds a rule to the given security group that allows traffic from the EIC.
+     * @deprecated to be removed
      */
     grantEicIngressFor(name: string, securityGroupId: pulumi.Input<string>) {
         new aws.vpc.SecurityGroupIngressRule(name, {

@@ -88,7 +88,7 @@ export class Ec2PostgresqlDatabase extends pulumi.ComponentResource {
         };
     }
 
-    getInstanceId() {
+    getInstanceId(): pulumi.Output<string> {
         return this.instance.id;
     }
 

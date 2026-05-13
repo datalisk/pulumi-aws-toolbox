@@ -21,7 +21,13 @@ export class Jumphost extends pulumi.ComponentResource {
             publicIngress: false,
         }, { parent: this });
 
-        args.vpc.grantEicIngressFor(`${name}-eic`, jumphostSg.securityGroupId);
+        new aws.vpc.SecurityGroupIngressRule(name, {
+            securityGroupId: jumphostSg.securityGroupId,
+            ipProtocol: "tcp",
+            fromPort: 22,
+            toPort: 22,
+            referencedSecurityGroupId: args.vpc.eicSecurityGroupId
+        }, { parent: this });
 
         const ami = pulumi.output(aws.ec2.getAmi({
             owners: ["amazon"],
