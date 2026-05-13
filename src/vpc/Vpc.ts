@@ -185,9 +185,9 @@ export class Vpc extends ComponentResource implements IVpc {
     }
 
     /**
-     * Adds a rule to the given StdSecurityGroup that allows traffic from the EIC.
+     * Adds a rule to the given security group that allows traffic from the EIC.
      */
-    grantEicIngressFor(name: string, securityGroupId: pulumi.Output<string>) {
+    grantEicIngressFor(name: string, securityGroupId: pulumi.Input<string>) {
         new aws.vpc.SecurityGroupIngressRule(name, {
             securityGroupId: securityGroupId,
             ipProtocol: "tcp",
