@@ -65,11 +65,12 @@ export class Routing {
     }
 
     private createRoute(route: ComfortRoute, index: number): EffectiveRoute {
-        const httpsCustomOriginConfig = {
+        const defaultCustomOriginConfig = {
             httpPort: 80,
             httpsPort: 443,
             originProtocolPolicy: "https-only",
-            originSslProtocols: ["TLSv1.2"]
+            originSslProtocols: ["TLSv1.2"],
+            originReadTimeout: 120
         };
 
         if (route.type == RouteType.Custom) {
@@ -78,7 +79,8 @@ export class Routing {
                 origin: {
                     originId: `route-${route.pathPattern}`,
                     domainName: route.originDomainName,
-                    customOriginConfig: httpsCustomOriginConfig
+                    customOriginConfig: defaultCustomOriginConfig,
+                    connectionAttempts: 1
                 },
                 cacheBehavior: this.getRouteCacheBehavior(route, index)
             };
@@ -100,7 +102,8 @@ export class Routing {
                 origin: {
                     originId: `route-${route.pathPattern}`,
                     domainName: route.functionUrl.functionUrl.apply(url => new URL(url).host),
-                    customOriginConfig: httpsCustomOriginConfig,
+                    customOriginConfig: defaultCustomOriginConfig,
+                    connectionAttempts: 1
                 },
                 cacheBehavior: {
                     ...(this.getRouteCacheBehavior(route, index)),
