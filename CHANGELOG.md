@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/datalisk/pulumi-aws-toolbox/compare/v3.1.1...v3.2.0) (2026-07-28)
+
+
+### Features
+
+* Website using 120s as read timeout, with only a single connection attempt ([cbb9d0f](https://github.com/datalisk/pulumi-aws-toolbox/commit/cbb9d0fcc88553ce7b041f9d7d74c8d9d566dd32))
+
 ## [3.1.1](https://github.com/datalisk/pulumi-aws-toolbox/compare/v3.1.0...v3.1.1) (2026-05-13)
 
 
